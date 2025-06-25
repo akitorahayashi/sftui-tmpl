@@ -1,0 +1,38 @@
+xcuserdata/
+*.xcodeproj/
+
+## ビルド関連
+DerivedData/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+build/
+
+## Objective-C/Swift固有のファイル
+*.hmap
+
+## パッケージング
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+Package.resolved
+.swiftpm/
+
+# macOSシステムファイル
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# 環境変数とシークレット
+*.env
+*.pem
+*.p12
+*.cer
+*.mobileprovision
+/.cursor/
+
+# CI/CD output directory
+ci-outputs/ 

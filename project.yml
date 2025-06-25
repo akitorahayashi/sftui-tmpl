@@ -1,0 +1,32 @@
+# mint run xcodegen
+
+name: TemplateApp
+options:
+  bundleIdPrefix: com.example
+  createIntermediateGroups: true
+  defaultConfig: Debug
+  
+settings:
+  MARKETING_VERSION: 1.0.0
+  CURRENT_PROJECT_VERSION: 1
+  IPHONEOS_DEPLOYMENT_TARGET: 15.0
+  SWIFT_VERSION: 5.0
+
+configs:
+  Debug: debug
+  Release: release
+
+targets:
+  TemplateApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - TemplateApp
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: ${bundleIdPrefix}.templateapp
+      INFOPLIST_FILE: TemplateApp/Info.plist
+      ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+      DEVELOPMENT_ASSET_PATHS: TemplateApp/Resources/Assets.xcassets
+
