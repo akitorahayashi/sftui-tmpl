@@ -30,3 +30,27 @@ targets:
       ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
       DEVELOPMENT_ASSET_PATHS: TemplateApp/Resources/Assets.xcassets
 
+  TemplateAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - TemplateAppTests
+    dependencies:
+      - target: TemplateApp
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: ${bundleIdPrefix}.templateapp.tests
+      INFOPLIST_FILE: TemplateAppTests/Info.plist
+
+  TemplateAppUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - TemplateAppUITests
+    dependencies:
+      - target: TemplateApp
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: ${bundleIdPrefix}.templateapp.uitests
+      INFOPLIST_FILE: TemplateAppUITests/Info.plist
+
