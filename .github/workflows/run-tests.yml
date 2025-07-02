@@ -41,7 +41,7 @@ jobs:
         run: |
           SIMULATOR_ID=$(./.github/scripts/find-simulator.sh)
           echo "シミュレータ ID ($SIMULATOR_ID) が選択されました"
-          echo "simulator_id=$SIMULATOR_ID" >> $GITHUB_OUTPUT
+          echo "simulator_id=$SIMULATOR_ID" >> "$GITHUB_OUTPUT"
 
       - name: Run Unit Tests
         id: unit_tests
@@ -94,7 +94,7 @@ jobs:
         run: |
           SIMULATOR_ID=$(./.github/scripts/find-simulator.sh)
           echo "シミュレータ ID ($SIMULATOR_ID) が選択されました"
-          echo "simulator_id=$SIMULATOR_ID" >> $GITHUB_OUTPUT
+          echo "simulator_id=$SIMULATOR_ID" >> "$GITHUB_OUTPUT"
 
       - name: Run UI Tests
         id: ui_tests

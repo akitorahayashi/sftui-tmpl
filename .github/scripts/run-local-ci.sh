@@ -156,8 +156,11 @@ if [ "$run_unit_tests" = true ] || [ "$run_ui_tests" = true ]; then
   fi
 
   # スクリプトを実行し、IDと終了コードをキャプチャ
+  # set -e を一時的に無効化してエラーコードを適切にキャプチャ
+  set +e
   SIMULATOR_ID=$("$FIND_SIMULATOR_SCRIPT")
   SCRIPT_EXIT_CODE=$?
+  set -e
 
   if [ $SCRIPT_EXIT_CODE -ne 0 ]; then
       fail "$FIND_SIMULATOR_SCRIPT failed with exit code $SCRIPT_EXIT_CODE."

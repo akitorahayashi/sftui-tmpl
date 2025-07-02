@@ -6,35 +6,35 @@ on:
 jobs:
   test-package:
     runs-on: macos-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '15.4'
-          
+
       - name: Setup Swift
         uses: swift-actions/setup-swift@v1
         with:
           swift-version: '5.9'
-          
+
       - name: Install Mint
         run: |
           curl -L https://github.com/yonaskolb/Mint/releases/download/0.17.5/mint.zip -o mint.zip
           unzip mint.zip
           sudo mv mint /usr/local/bin/
-          
+
       - name: Install Tools
         run: mint bootstrap
-        
+
       - name: Run SwiftLint
         run: mint run swiftlint swiftlint
-        
+
       - name: Run SwiftFormat (Check)
         run: mint run swiftformat swiftformat --lint .
-          
+
       - name: Run Tests
         run: swift test
