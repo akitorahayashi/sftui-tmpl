@@ -165,14 +165,28 @@ mkdir -p "$OUTPUT_DIR/test-results/unit" \
          "$OUTPUT_DIR/production/archives"
 success "Directories created under $OUTPUT_DIR."
 
+# === Dependency Check ===
+# 必要なツールの存在確認
+step "Checking dependencies"
+
+# mint の存在確認
+if ! command -v mint &> /dev/null; then
+    fail "Mint がインストールされていません。先に mint をインストールしてください。(brew install mint)"
+fi
+
+# xcbeautify の存在確認 (テストまたはアーカイブを実行する場合)
+if [ "$run_unit_tests" = true ] || [ "$run_ui_tests" = true ] || [ "$run_archive" = true ]; then
+    if ! command -v xcbeautify &> /dev/null; then
+        fail "xcbeautify がインストールされていません。先に xcbeautify をインストールしてください。(brew install xcbeautify)"
+    fi
+fi
+
+success "All required dependencies are available."
+
 # === XcodeGen ===
 # プロジェクト生成 (アーカイブ時 or ビルドを伴うテスト実行時)
 if [[ "$skip_build_for_testing" = false && ( "$run_archive" = true || "$run_unit_tests" = true || "$run_ui_tests" = true ) ]]; then
   step "Generating Xcode project using XcodeGen"
-  # mint の存在確認
-  if ! command -v mint &> /dev/null; then
-      fail "Mint がインストールされていません。先に mint をインストールしてください。(brew install mint)"
-  fi
   # xcodegen の存在確認 (なければ bootstrap)
   if ! mint list | grep -q 'XcodeGen'; then
       echo "mint で XcodeGen が見つかりません。'mint bootstrap' を実行します..."
@@ -189,9 +203,6 @@ elif [ "$skip_build_for_testing" = true ]; then
   # test-without-buildingの場合もプロジェクトファイルは必要
   if [ ! -d "$PROJECT_FILE" ]; then
     step "Generating Xcode project for test-without-building"
-    if ! command -v mint &> /dev/null; then
-        fail "Mint がインストールされていません。先に mint をインストールしてください。(brew install mint)"
-    fi
     if ! mint list | grep -q 'XcodeGen'; then
         echo "mint で XcodeGen が見つかりません。'mint bootstrap' を実行します..."
         mint bootstrap || fail "mint パッケージの bootstrap に失敗しました。"
