@@ -31,21 +31,18 @@ while [[ $# -gt 0 ]]; do
       run_unit_tests=true
       run_ui_tests=true
       run_archive=false
-      run_all=false
       specific_action_requested=true
       shift
       ;;
     --unit-test)
       run_unit_tests=true
       run_archive=false
-      run_all=false
       specific_action_requested=true
       shift
       ;;
     --ui-test)
       run_ui_tests=true
       run_archive=false
-      run_all=false
       specific_action_requested=true
       shift
       ;;
@@ -53,14 +50,12 @@ while [[ $# -gt 0 ]]; do
       run_unit_tests=false
       run_ui_tests=false
       run_archive=true
-      run_all=false
       specific_action_requested=true
       shift
       ;;
     --test-without-building)
       skip_build_for_testing=true
       run_archive=false
-      run_all=false
       specific_action_requested=true
       shift
       ;;
@@ -97,25 +92,30 @@ fail() {
 
 # === Main Script ===
 
-# 前回の出力をクリーンアップし、ディレクトリを作成 (ビルドをスキップしない場合のみ)
+# 前回の出力をクリーンアップ (ビルドをスキップしない場合のみ)
 if [ "$skip_build_for_testing" = false ] || [ "$run_archive" = true ]; then
-  step "Cleaning previous outputs and creating directories"
+  step "Cleaning previous outputs"
   echo "Removing old $OUTPUT_DIR directory if it exists..."
   rm -rf "$OUTPUT_DIR"
-  echo "Creating directories..."
-  mkdir -p "$OUTPUT_DIR/test-results" "$OUTPUT_DIR/test-results/DerivedData" "$OUTPUT_DIR/production" "$OUTPUT_DIR/production/archives"
-  success "Directories created under $OUTPUT_DIR."
+  success "Previous outputs cleaned."
 else
-  step "Skipping cleanup and directory creation (reusing existing build outputs)"
-  # ビルドせずにテストを実行する場合、テストに必要なディレクトリが存在することを確認
+  step "Reusing existing build outputs"
+  # ビルドせずにテストを実行する場合、DerivedDataディレクトリの存在を確認
   if [ "$run_unit_tests" = true ] || [ "$run_ui_tests" = true ]; then
       if [ ! -d "$OUTPUT_DIR/test-results/DerivedData" ]; then
           fail "Cannot run tests without building: DerivedData directory not found at $OUTPUT_DIR/test-results/DerivedData. Run a full build first."
       fi
-      mkdir -p "$OUTPUT_DIR/test-results/unit" "$OUTPUT_DIR/test-results/ui"
-      success "Required test directories exist or created."
   fi
 fi
+
+# 必要なディレクトリを作成
+echo "Creating directories..."
+mkdir -p "$OUTPUT_DIR/test-results/DerivedData" \
+         "$OUTPUT_DIR/test-results/unit" \
+         "$OUTPUT_DIR/test-results/ui" \
+         "$OUTPUT_DIR/production" \
+         "$OUTPUT_DIR/production/archives"
+success "Directories created under $OUTPUT_DIR."
 
 # === XcodeGen ===
 # プロジェクト生成 (アーカイブ時 or ビルドを伴うテスト実行時)
