@@ -110,25 +110,21 @@ find_existing_artifacts() {
   local search_paths=(
     "$OUTPUT_DIR/test-results/DerivedData"
     "DerivedData"
-    "~/Library/Developer/Xcode/DerivedData"
     "$HOME/Library/Developer/Xcode/DerivedData"
   )
   
   echo "既存のビルドアーティファクトを検索中..."
   
   for path in "${search_paths[@]}"; do
-    # チルダ展開
-    expanded_path="${path/#\~/$HOME}"
-    
-    if [ -d "$expanded_path" ]; then
+    if [ -d "$path" ]; then
       # findを使ってTemplateApp.appを検索
-      if find "$expanded_path" -name "TemplateApp.app" -type d | head -1 | grep -q "TemplateApp.app"; then
-        echo "Found existing build artifacts at: $expanded_path"
+      if find "$path" -name "TemplateApp.app" -type d | head -1 | grep -q "TemplateApp.app"; then
+        echo "Found existing build artifacts at: $path"
         # シンボリックリンクまたはコピーでアーティファクトを利用可能にする
-        if [ "$expanded_path" != "$OUTPUT_DIR/test-results/DerivedData" ]; then
+        if [ "$path" != "$OUTPUT_DIR/test-results/DerivedData" ]; then
           echo "Linking artifacts to $OUTPUT_DIR/test-results/DerivedData"
           mkdir -p "$OUTPUT_DIR/test-results"
-          ln -sfn "$expanded_path" "$OUTPUT_DIR/test-results/DerivedData"
+          ln -sfn "$path" "$OUTPUT_DIR/test-results/DerivedData"
         fi
         return 0
       fi

@@ -8,8 +8,6 @@ jobs:
     runs-on: macos-latest
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
-    outputs:
-      simulator_id: ${{ steps.select_simulator.outputs.simulator_id }}
     steps:
       - uses: actions/checkout@v4
 
@@ -43,6 +41,12 @@ jobs:
           echo "シミュレータ ID ($SIMULATOR_ID) が選択されました"
           echo "simulator_id=$SIMULATOR_ID" >> "$GITHUB_OUTPUT"
 
+      - name: Boot Simulator
+        run: |
+          echo "シミュレータ (${{ steps.select_simulator.outputs.simulator_id }}) を起動しています..."
+          xcrun simctl boot "${{ steps.select_simulator.outputs.simulator_id }}" || echo "シミュレータは既に起動しています"
+          echo "✅ シミュレータが正常に起動しました"
+
       - name: Build for Testing
         run: |
           set -o pipefail
@@ -54,8 +58,7 @@ jobs:
             -derivedDataPath "${{ github.workspace }}/DerivedData" \
             -configuration Debug \
             -skipMacroValidation \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
             | xcbeautify
 
       - name: Upload build artifacts
@@ -102,19 +105,34 @@ jobs:
           name: built-products
           path: ${{ github.workspace }}/DerivedData/Build/Products/
 
+      - name: Make find-simulator script executable
+        run: chmod +x .github/scripts/find-simulator.sh
+
+      - name: Select Simulator
+        id: select_simulator
+        run: |
+          SIMULATOR_ID=$(./.github/scripts/find-simulator.sh)
+          echo "シミュレータ ID ($SIMULATOR_ID) が選択されました"
+          echo "simulator_id=$SIMULATOR_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Boot Simulator
+        run: |
+          echo "シミュレータ (${{ steps.select_simulator.outputs.simulator_id }}) を起動しています..."
+          xcrun simctl boot "${{ steps.select_simulator.outputs.simulator_id }}" || echo "シミュレータは既に起動しています"
+          echo "✅ シミュレータが正常に起動しました"
+
       - name: Run Unit Tests
         id: unit_tests
         run: |
           set -o pipefail
-          echo "シミュレータ ID (${{ needs.build-for-testing.outputs.simulator_id }}) を使用してユニットテストを実行します"
+          echo "シミュレータ ID (${{ steps.select_simulator.outputs.simulator_id }}) を使用してユニットテストを実行します"
           xcodebuild test-without-building \
             -project "TemplateApp.xcodeproj" \
             -scheme "TemplateAppTests" \
-            -destination "platform=iOS Simulator,id=${{ needs.build-for-testing.outputs.simulator_id }}" \
+            -destination "platform=iOS Simulator,id=${{ steps.select_simulator.outputs.simulator_id }}" \
             -derivedDataPath "${{ github.workspace }}/DerivedData" \
             -enableCodeCoverage NO \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
             | xcbeautify
 
   ui-test:
@@ -153,17 +171,32 @@ jobs:
           name: built-products
           path: ${{ github.workspace }}/DerivedData/Build/Products/
 
+      - name: Make find-simulator script executable
+        run: chmod +x .github/scripts/find-simulator.sh
+
+      - name: Select Simulator
+        id: select_simulator
+        run: |
+          SIMULATOR_ID=$(./.github/scripts/find-simulator.sh)
+          echo "シミュレータ ID ($SIMULATOR_ID) が選択されました"
+          echo "simulator_id=$SIMULATOR_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Boot Simulator
+        run: |
+          echo "シミュレータ (${{ steps.select_simulator.outputs.simulator_id }}) を起動しています..."
+          xcrun simctl boot "${{ steps.select_simulator.outputs.simulator_id }}" || echo "シミュレータは既に起動しています"
+          echo "✅ シミュレータが正常に起動しました"
+
       - name: Run UI Tests
         id: ui_tests
         run: |
           set -o pipefail
-          echo "シミュレータ ID (${{ needs.build-for-testing.outputs.simulator_id }}) を使用して UI テストを実行します"
+          echo "シミュレータ ID (${{ steps.select_simulator.outputs.simulator_id }}) を使用して UI テストを実行します"
           xcodebuild test-without-building \
             -project "TemplateApp.xcodeproj" \
             -scheme "TemplateAppUITests" \
-            -destination "platform=iOS Simulator,id=${{ needs.build-for-testing.outputs.simulator_id }}" \
+            -destination "platform=iOS Simulator,id=${{ steps.select_simulator.outputs.simulator_id }}" \
             -derivedDataPath "${{ github.workspace }}/DerivedData" \
             -enableCodeCoverage NO \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
             | xcbeautify
