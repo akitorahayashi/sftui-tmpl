@@ -8,11 +8,13 @@
 #-------------------------------------------------------------------
 # Replace the placeholders with values that match your project.
 # Swift language version used by your project
-swift_version: <SWIFT_VERSION>
+swift_version: 5.9
 
 # Paths to include in linting
 included:
-  - <PATH_TO_SOURCES>/**/*.swift
+  - TemplateApp/**/*.swift
+  - TemplateAppTests/**/*.swift
+  - TemplateAppUITests/**/*.swift
 
 #-------------------------------------------------------------------
 # Analysis Targets
@@ -27,7 +29,6 @@ excluded:
   - xcbuild
   - "**/*.generated.swift"
   - "**/*.xcodeproj"
-  - <EXCLUDED_PATHS>
 
 #-------------------------------------------------------------------
 # Rule Configuration

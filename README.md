@@ -10,15 +10,10 @@ SwiftUI ベースの iOS アプリ用テンプレートです
    - `MARKETING_VERSION` → バージョン  
    - `IPHONEOS_DEPLOYMENT_TARGET` → 最小 OS バージョン
 
-2. Package.swift  
-   - `dependencies` に必要なパッケージを追加  
-   - `targets.<ターゲット名>.dependencies` にパッケージ名を追加
+2. ツールの設定  
+   - 現在 SwiftLint および SwiftFormat は Swift 5.9 にしています
 
-3. ツールの設定  
-   - `.swiftlint.yml` と `.swiftformat` 内の  
-     `<SWIFT_VERSION>`, `<PATH_TO_SOURCES>`, `<EXCLUDED_PATHS>`
-
-4. CI/CDの設定  
+3. CI/CDの設定  
    - `.github/workflows/`
    - `.github/scripts/run-local-ci.sh`
    - Xcode のバージョンを変更
