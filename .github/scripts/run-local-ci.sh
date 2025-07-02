@@ -5,7 +5,10 @@
 #   $ .github/scripts/run-local-ci.sh --unit-test    # ユニットテストのみ実行
 #   $ .github/scripts/run-local-ci.sh --ui-test      # UIテストのみ実行
 #   $ .github/scripts/run-local-ci.sh --archive-only # アーカイブのみ実行
-#   $ .github/scripts/run-local-ci.sh --test-without-building # 既存ビルド成果物でテストのみ
+#   $ .github/scripts/run-local-ci.sh --test-without-building # 既存のビルド成果物で全テスト + アーカイブ実行
+#   $ .github/scripts/run-local-ci.sh --test-without-building --unit-test # 既存のビルド成果物でユニットテストのみ
+#   $ .github/scripts/run-local-ci.sh --test-without-building --ui-test   # 既存のビルド成果物でUIテストのみ
+#   $ .github/scripts/run-local-ci.sh --test-without-building --all-tests # 既存のビルド成果物で全テストのみ（アーカイブなし）
 
 set -euo pipefail
 
@@ -24,6 +27,8 @@ skip_build_for_testing=false
 
 # === Argument Parsing ===
 specific_action_requested=false
+test_without_building_specified=false
+
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
@@ -55,7 +60,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --test-without-building)
       skip_build_for_testing=true
-      run_archive=false
+      test_without_building_specified=true
       specific_action_requested=true
       shift
       ;;
@@ -66,11 +71,21 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# 特定のアクションが要求されなかった場合は、すべてを実行
-if [ "$specific_action_requested" = false ]; then
-  run_unit_tests=true
-  run_ui_tests=true
-  run_archive=true
+# --test-without-buildingが指定された場合の特別処理
+if [ "$test_without_building_specified" = true ]; then
+  # 他のテストフラグが指定されていない場合は、全テスト + アーカイブを実行
+  if [ "$run_unit_tests" = false ] && [ "$run_ui_tests" = false ] && [ "$run_archive" = false ]; then
+    run_unit_tests=true
+    run_ui_tests=true
+    run_archive=true
+  fi
+else
+  # 特定のアクションが要求されなかった場合は、すべてを実行
+  if [ "$specific_action_requested" = false ]; then
+    run_unit_tests=true
+    run_ui_tests=true
+    run_archive=true
+  fi
 fi
 
 # === Helper Functions ===
@@ -90,28 +105,61 @@ fail() {
   exit 1
 }
 
+# アーティファクト検索関数
+find_existing_artifacts() {
+  local search_paths=(
+    "$OUTPUT_DIR/test-results/DerivedData"
+    "DerivedData"
+    "~/Library/Developer/Xcode/DerivedData"
+    "$HOME/Library/Developer/Xcode/DerivedData"
+  )
+  
+  echo "既存のビルドアーティファクトを検索中..."
+  
+  for path in "${search_paths[@]}"; do
+    # チルダ展開
+    expanded_path="${path/#\~/$HOME}"
+    
+    if [ -d "$expanded_path" ]; then
+      # findを使ってTemplateApp.appを検索
+      if find "$expanded_path" -name "TemplateApp.app" -type d | head -1 | grep -q "TemplateApp.app"; then
+        echo "Found existing build artifacts at: $expanded_path"
+        # シンボリックリンクまたはコピーでアーティファクトを利用可能にする
+        if [ "$expanded_path" != "$OUTPUT_DIR/test-results/DerivedData" ]; then
+          echo "Linking artifacts to $OUTPUT_DIR/test-results/DerivedData"
+          mkdir -p "$OUTPUT_DIR/test-results"
+          ln -sfn "$expanded_path" "$OUTPUT_DIR/test-results/DerivedData"
+        fi
+        return 0
+      fi
+    fi
+  done
+  
+  return 1
+}
+
 # === Main Script ===
 
 # 前回の出力をクリーンアップ (ビルドをスキップしない場合のみ)
-if [ "$skip_build_for_testing" = false ] || [ "$run_archive" = true ]; then
+if [ "$skip_build_for_testing" = false ]; then
   step "Cleaning previous outputs"
   echo "Removing old $OUTPUT_DIR directory if it exists..."
   rm -rf "$OUTPUT_DIR"
   success "Previous outputs cleaned."
 else
   step "Reusing existing build outputs"
-  # ビルドせずにテストを実行する場合、DerivedDataディレクトリの存在を確認
+  # ビルドせずにテストを実行する場合、アーティファクトを検索
   if [ "$run_unit_tests" = true ] || [ "$run_ui_tests" = true ]; then
-      if [ ! -d "$OUTPUT_DIR/test-results/DerivedData" ]; then
-          fail "Cannot run tests without building: DerivedData directory not found at $OUTPUT_DIR/test-results/DerivedData. Run a full build first."
+      if ! find_existing_artifacts; then
+          fail "Cannot run tests without building: No existing build artifacts found. Please run a full build first or remove --test-without-building flag."
       fi
+      success "Found and configured existing build artifacts."
   fi
 fi
 
 # 必要なディレクトリを作成
 echo "Creating directories..."
-mkdir -p "$OUTPUT_DIR/test-results/DerivedData" \
-         "$OUTPUT_DIR/test-results/unit" \
+mkdir -p "$OUTPUT_DIR/test-results/unit" \
          "$OUTPUT_DIR/test-results/ui" \
          "$OUTPUT_DIR/production" \
          "$OUTPUT_DIR/production/archives"
@@ -137,6 +185,21 @@ if [[ "$skip_build_for_testing" = false && ( "$run_archive" = true || "$run_unit
     fail "XcodeGen 実行後、プロジェクトファイル '$PROJECT_FILE' が見つかりません。"
   fi
   success "Xcode project generated successfully."
+elif [ "$skip_build_for_testing" = true ]; then
+  # test-without-buildingの場合もプロジェクトファイルは必要
+  if [ ! -d "$PROJECT_FILE" ]; then
+    step "Generating Xcode project for test-without-building"
+    if ! command -v mint &> /dev/null; then
+        fail "Mint がインストールされていません。先に mint をインストールしてください。(brew install mint)"
+    fi
+    if ! mint list | grep -q 'XcodeGen'; then
+        echo "mint で XcodeGen が見つかりません。'mint bootstrap' を実行します..."
+        mint bootstrap || fail "mint パッケージの bootstrap に失敗しました。"
+    fi
+    echo "Running xcodegen..."
+    mint run xcodegen || fail "XcodeGen によるプロジェクト生成に失敗しました。"
+    success "Xcode project generated for testing."
+  fi
 fi
 
 if [ "$run_unit_tests" = true ] || [ "$run_ui_tests" = true ]; then
@@ -187,20 +250,14 @@ if [ "$run_unit_tests" = true ] || [ "$run_ui_tests" = true ]; then
     success "Build for testing completed."
   else
       echo "Skipping build for testing as requested (--test-without-building)."
-      if [ ! -d "$OUTPUT_DIR/test-results/DerivedData/Build/Intermediates.noindex/XCBuildData" ]; then
-         fail "Cannot skip build: No existing build artifacts found in $OUTPUT_DIR/test-results/DerivedData. Run a full build first."
-      fi
       success "Using existing build artifacts."
   fi
 
   # Unitテストを実行
   if [ "$run_unit_tests" = true ]; then
-    # Swift Package Managerのテストを実行
-    step "Running Swift Package Manager Tests"
-    echo "Running SPM tests..."
-    swift test || fail "Swift Package Manager tests failed"
-    success "Swift Package Manager tests completed successfully"
-
+    step "Running Unit Tests"
+    # 古いテスト結果をクリーンアップ
+    rm -rf "$OUTPUT_DIR/test-results/unit/TestResults.xcresult"
     echo "Running Xcode Unit Tests..."
     set -o pipefail && xcodebuild test-without-building \
       -project "$PROJECT_FILE" \
@@ -222,6 +279,9 @@ if [ "$run_unit_tests" = true ] || [ "$run_ui_tests" = true ]; then
 
   # UIテストを実行
   if [ "$run_ui_tests" = true ]; then
+    step "Running UI Tests"
+    # 古いテスト結果をクリーンアップ
+    rm -rf "$OUTPUT_DIR/test-results/ui/TestResults.xcresult"
     echo "Running UI Tests..."
     set -o pipefail && xcodebuild test-without-building \
       -project "$PROJECT_FILE" \

@@ -53,3 +53,38 @@ targets:
       PRODUCT_BUNDLE_IDENTIFIER: ${bundleIdPrefix}.templateapp.uitests
       INFOPLIST_FILE: TemplateAppUITests/Info.plist
 
+schemes:
+  TemplateApp:
+    build:
+      targets:
+        TemplateApp: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - TemplateAppTests
+        - TemplateAppUITests
+    archive:
+      config: Release
+
+  TemplateAppTests:
+    build:
+      targets:
+        TemplateApp: all
+        TemplateAppTests: [test]
+    test:
+      config: Debug
+      targets:
+        - TemplateAppTests
+
+  TemplateAppUITests:
+    build:
+      targets:
+        TemplateApp: all
+        TemplateAppUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - TemplateAppUITests
+
