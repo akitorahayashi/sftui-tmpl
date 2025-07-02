@@ -10,10 +10,7 @@ SwiftUI ベースの iOS アプリ用テンプレートです
    - `MARKETING_VERSION` → バージョン  
    - `IPHONEOS_DEPLOYMENT_TARGET` → 最小 OS バージョン
 
-2. ツールの設定  
-   - 現在 SwiftLint および SwiftFormat は Swift 5.9 にしています
-
-3. CI/CDの設定  
+2. CI/CDの設定  
    - `.github/workflows/`
    - `.github/scripts/run-local-ci.sh`
    - Xcode のバージョンを変更

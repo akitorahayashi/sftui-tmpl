@@ -7,8 +7,6 @@
 # Project-Specific Placeholders
 #-------------------------------------------------------------------
 # Replace the placeholders with values that match your project.
-# Swift language version used by your project
-swift_version: 5.9
 
 # Paths to include in linting
 included:
@@ -38,7 +36,6 @@ disabled_rules:
   - line_length # 行の長さは別途カスタマイズ
   - trailing_newline # 末尾の改行を無視
   - trailing_comma # SwiftFormatで制御するため無効化
-  - cyclomatic_complexity # 循環的複雑度のチェックを無効化
   - missing_docs # 公開APIのドキュメント要求を無効化
   - opening_brace # 波括弧の配置ルールを無効化
   - multiple_closures_with_trailing_closure # 複数のクロージャを持つ場合のトレイリングクロージャ構文を許可
@@ -59,14 +56,12 @@ analyzer_rules:
   - unused_import # 未使用importの検出
   - explicit_self # プロパティやメソッド参照時に self. を明示
   - redundant_nil_coalescing # 不要な ?? nil の検出
-  - prefer_self_type_over_type(of:) # type(of: self) より Self を推奨
-  - unused_private_declaration # private な未使用宣言を検出
 
 #-------------------------------------------------------------------
 # Individual Rule Settings
 #-------------------------------------------------------------------
 
-# ファイルの長さ制限
+# ファイルの長さの制限
 file_length:
   warning: 600
   error: 1000
@@ -76,7 +71,7 @@ cyclomatic_complexity:
   warning: 10
   error: 20
 
-# ネスト制限
+# ネストの制限
 nesting:
   type_level:
     warning: 3
