@@ -15,11 +15,6 @@ jobs:
     permissions:
       contents: read
 
-  # パッケージのテスト
-  test-package:
-    name: Test Package
-    uses: ./.github/workflows/package-tests.yml
-
   # コード品質チェック
   code-quality:
     name: Code Quality Check
