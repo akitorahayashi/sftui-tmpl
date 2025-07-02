@@ -15,14 +15,12 @@ PROJECT_FILE="TemplateApp.xcodeproj"
 APP_SCHEME="TemplateApp"
 UNIT_TEST_SCHEME="TemplateAppTests"
 UI_TEST_SCHEME="TemplateAppUITests"
-WATCH_APP_SCHEME="TemplateApp"
 
 # === Default Flags ===
 run_unit_tests=false
 run_ui_tests=false
 run_archive=false
 skip_build_for_testing=false
-run_all=true # 引数が指定されていない場合は、デフォルトですべてのステップを実行
 
 # === Argument Parsing ===
 specific_action_requested=false

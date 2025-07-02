@@ -18,7 +18,6 @@
 --exclude **/*.generated.swift
 --exclude **/ci-outputs/**
 --exclude **/*.xcodeproj
---extension swift               # 解析対象とする拡張子
 
 #-------------------------------------------------------------------
 # Indentation & Spacing

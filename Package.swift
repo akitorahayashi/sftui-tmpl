@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "TemplateApp",
     platforms: [
-        .iOS(.v15)
+        .iOS(.v15),
     ],
     dependencies: [
         // Add your Swift Package dependencies here
@@ -23,6 +23,6 @@ let package = Package(
                 // "Alamofire",
                 // "SwiftUIX",
             ]
-        )
+        ),
     ]
-) 
+)
