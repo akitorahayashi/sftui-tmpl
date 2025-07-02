@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
+# 依存コマンドの存在確認
+for cmd in xcrun jq; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "Error: '$cmd' is required but not installed." >&2
+    exit 1
+  fi
+done
+
 # 利用可能な最初のiOSシミュレータのUDIDを取得
 SIMULATOR_UDID=$(xcrun simctl list devices available --json | \
   jq -r '.devices | to_entries[] | select(.key | startswith("com.apple.CoreSimulator.SimRuntime.iOS")) | .value[] | select(.isAvailable == true and (.name | contains("iPhone"))) | .udid' | \
