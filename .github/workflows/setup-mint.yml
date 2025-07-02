@@ -28,4 +28,5 @@ jobs:
             ${{ runner.os }}-mint-
 
       - name: Bootstrap Mint packages
-        run: mint bootstrap 
+        if: steps.cache-mint-packages.outputs.cache-hit != 'true'
+        run: mint bootstrap
