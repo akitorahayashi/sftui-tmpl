@@ -18,15 +18,5 @@ jobs:
       - name: Install Mint
         run: brew install mint
 
-      - name: Cache Mint packages
-        uses: actions/cache@v4
-        id: cache-mint-packages
-        with:
-          path: ${{ env.MINT_PATH }}
-          key: ${{ runner.os }}-mint-${{ hashFiles('**/Mintfile') }}
-          restore-keys: |
-            ${{ runner.os }}-mint-
-
       - name: Bootstrap Mint packages
-        if: steps.cache-mint-packages.outputs.cache-hit != 'true'
         run: mint bootstrap
