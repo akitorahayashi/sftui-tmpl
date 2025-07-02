@@ -10,9 +10,18 @@ for cmd in xcrun jq; do
   fi
 done
 
-# 利用可能な最初のiOSシミュレータのUDIDを取得
+# 利用可能な最新のiOSシミュレータのUDIDを取得
 SIMULATOR_UDID=$(xcrun simctl list devices available --json | \
-  jq -r '.devices | to_entries[] | select(.key | startswith("com.apple.CoreSimulator.SimRuntime.iOS")) | .value[] | select(.isAvailable == true and (.name | contains("iPhone"))) | .udid' | \
+  jq -r '
+    .devices
+    | to_entries[]
+    | select(.key | startswith("com.apple.CoreSimulator.SimRuntime.iOS"))
+    | .value[]
+    | select(.isAvailable == true and (.name | contains("iPhone")))
+    | {udid, runtime: .key}
+  ' | \
+  sort -rV -k2,2 | \
+  awk "{print \$1}" | \
   head -n 1)
 
 if [ -z "$SIMULATOR_UDID" ]; then
