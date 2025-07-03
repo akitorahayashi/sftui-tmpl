@@ -7,9 +7,13 @@ set -e
 echo "Finding the first available iOS simulator... (xcrun simctl)" >&2
 
 # xcrun simctl から利用可能なデバイスリストを JSON 形式で取得
-SIMCTL_OUTPUT=$(xcrun simctl list devices available --json)
-if [ $? -ne 0 ] || [ -z "$SIMCTL_OUTPUT" ]; then
+if ! SIMCTL_OUTPUT=$(xcrun simctl list devices available --json); then
     echo "Error: Failed to get simulator list from xcrun simctl." >&2
+    exit 1
+fi
+
+if [ -z "$SIMCTL_OUTPUT" ]; then
+    echo "Error: xcrun simctl returned empty output." >&2
     exit 1
 fi
 

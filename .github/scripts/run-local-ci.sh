@@ -5,10 +5,7 @@
 #   $ .github/scripts/run-local-ci.sh --unit-test    # ユニットテストのみ実行
 #   $ .github/scripts/run-local-ci.sh --ui-test      # UIテストのみ実行
 #   $ .github/scripts/run-local-ci.sh --archive-only # アーカイブのみ実行
-#   $ .github/scripts/run-local-ci.sh --test-without-building # 既存のビルド成果物で全テスト + アーカイブ実行
-#   $ .github/scripts/run-local-ci.sh --test-without-building --unit-test # 既存のビルド成果物でユニットテストのみ
-#   $ .github/scripts/run-local-ci.sh --test-without-building --ui-test   # 既存のビルド成果物でUIテストのみ
-#   $ .github/scripts/run-local-ci.sh --test-without-building --all-tests # 既存のビルド成果物で全テストのみ（アーカイブなし）
+#   $ --test-without-building # 既存のビルド成果物を使用してテスト実行
 
 set -euo pipefail
 
