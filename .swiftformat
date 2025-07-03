@@ -6,7 +6,7 @@
 # General Configuration
 #-------------------------------------------------------------------
 # Swiftのバージョン（プロジェクトのSwiftバージョンに合わせて変更してください）
---swiftversion <SWIFT_VERSION>
+--swiftversion 5.9
 
 # 除外するディレクトリ（ビルド成果物、依存関係など）
 --exclude .build
@@ -18,9 +18,6 @@
 --exclude **/*.generated.swift
 --exclude **/ci-outputs/**
 --exclude **/*.xcodeproj
---exclude <EXCLUDED_PATHS>
---extension swift               # 解析対象とする拡張子
---path <PATH_TO_SOURCES>        # フォーマット対象のディレクトリ
 
 #-------------------------------------------------------------------
 # Indentation & Spacing

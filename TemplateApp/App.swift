@@ -7,4 +7,4 @@ struct TemplateApp: App {
             ContentView()
         }
     }
-} 
+}
