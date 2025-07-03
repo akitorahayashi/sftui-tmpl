@@ -102,6 +102,16 @@ fail() {
   exit 1
 }
 
+# xcodeprojを必要に応じて生成する関数
+ensure_project_file() {
+  # プロジェクトファイルが存在しない場合は自動生成
+  if [ ! -d "$PROJECT_FILE" ]; then
+    step "Generating Xcode project using XcodeGen"
+    mint run xcodegen || fail "XcodeGen によるプロジェクト生成に失敗しました。"
+    success "Xcode project generated successfully."
+  fi
+}
+
 # アーティファクト検索関数
 find_existing_artifacts() {
   local search_paths=(
@@ -176,37 +186,9 @@ fi
 
 success "All required dependencies are available."
 
-# === XcodeGen ===
-# プロジェクト生成 (アーカイブ時 or ビルドを伴うテスト実行時)
-if [[ "$skip_build_for_testing" = false && ( "$run_archive" = true || "$run_unit_tests" = true || "$run_ui_tests" = true ) ]]; then
-  step "Generating Xcode project using XcodeGen"
-  # xcodegen の存在確認 (なければ bootstrap)
-  if ! mint list | grep -q 'XcodeGen'; then
-      echo "mint で XcodeGen が見つかりません。'mint bootstrap' を実行します..."
-      mint bootstrap || fail "mint パッケージの bootstrap に失敗しました。"
-  fi
-  echo "Running xcodegen..."
-  mint run xcodegen || fail "XcodeGen によるプロジェクト生成に失敗しました。"
-  # プロジェクトファイルの存在確認
-  if [ ! -d "$PROJECT_FILE" ]; then
-    fail "XcodeGen 実行後、プロジェクトファイル '$PROJECT_FILE' が見つかりません。"
-  fi
-  success "Xcode project generated successfully."
-elif [ "$skip_build_for_testing" = true ]; then
-  # test-without-buildingの場合もプロジェクトファイルは必要
-  if [ ! -d "$PROJECT_FILE" ]; then
-    step "Generating Xcode project for test-without-building"
-    if ! mint list | grep -q 'XcodeGen'; then
-        echo "mint で XcodeGen が見つかりません。'mint bootstrap' を実行します..."
-        mint bootstrap || fail "mint パッケージの bootstrap に失敗しました。"
-    fi
-    echo "Running xcodegen..."
-    mint run xcodegen || fail "XcodeGen によるプロジェクト生成に失敗しました。"
-    success "Xcode project generated for testing."
-  fi
-fi
-
 if [ "$run_unit_tests" = true ] || [ "$run_ui_tests" = true ]; then
+  # テスト実行時にプロジェクトファイルを確認
+  ensure_project_file
   step "Running Tests"
 
   # シミュレータを検索
@@ -308,6 +290,9 @@ fi
 
 # --- Build for Production (Archive) ---
 if [ "$run_archive" = true ]; then
+  # アーカイブ実行時にプロジェクトファイルを確認
+  ensure_project_file
+  
   step "Building for Production (Unsigned)"
 
   # アーカイブビルド
