@@ -51,11 +51,12 @@ jobs:
         run: |
           set -o pipefail
           echo "テスト用ビルドを実行します"
+          mkdir -p "${{ github.workspace }}/ci-outputs/test-results"
           xcodebuild build-for-testing \
             -project "TemplateApp.xcodeproj" \
             -scheme "TemplateApp" \
             -destination "platform=iOS Simulator,id=${{ steps.select_simulator.outputs.simulator_id }}" \
-            -derivedDataPath "${{ github.workspace }}/DerivedData" \
+            -derivedDataPath "${{ github.workspace }}/ci-outputs/test-results/DerivedData" \
             -configuration Debug \
             -skipMacroValidation \
             CODE_SIGNING_ALLOWED=NO \
@@ -66,7 +67,7 @@ jobs:
         with:
           name: built-products
           path: |
-            ${{ github.workspace }}/DerivedData/Build/Products/
+            ${{ github.workspace }}/ci-outputs/test-results/DerivedData/Build/Products/
           retention-days: 1
 
   unit-test:
@@ -103,7 +104,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: built-products
-          path: ${{ github.workspace }}/DerivedData/Build/Products/
+          path: ${{ github.workspace }}/ci-outputs/test-results/DerivedData/Build/Products/
 
       - name: Make find-simulator script executable
         run: chmod +x .github/scripts/find-simulator.sh
@@ -130,7 +131,7 @@ jobs:
             -project "TemplateApp.xcodeproj" \
             -scheme "TemplateAppTests" \
             -destination "platform=iOS Simulator,id=${{ steps.select_simulator.outputs.simulator_id }}" \
-            -derivedDataPath "${{ github.workspace }}/DerivedData" \
+            -derivedDataPath "${{ github.workspace }}/ci-outputs/test-results/DerivedData" \
             -enableCodeCoverage NO \
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify
@@ -169,7 +170,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: built-products
-          path: ${{ github.workspace }}/DerivedData/Build/Products/
+          path: ${{ github.workspace }}/ci-outputs/test-results/DerivedData/Build/Products/
 
       - name: Make find-simulator script executable
         run: chmod +x .github/scripts/find-simulator.sh
@@ -196,7 +197,7 @@ jobs:
             -project "TemplateApp.xcodeproj" \
             -scheme "TemplateAppUITests" \
             -destination "platform=iOS Simulator,id=${{ steps.select_simulator.outputs.simulator_id }}" \
-            -derivedDataPath "${{ github.workspace }}/DerivedData" \
+            -derivedDataPath "${{ github.workspace }}/ci-outputs/test-results/DerivedData" \
             -enableCodeCoverage NO \
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify
