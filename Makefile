@@ -17,7 +17,6 @@
 #   make test-all            - 全テストを実行
 #
 # [内部ワークフロー用コマンド]
-#   make deps                - 依存関係をチェック
 #   make find-test-artifacts - テストの成果物探索
 #
 # === Configuration ===
@@ -207,14 +206,6 @@ ui-test:
 .PHONY: test-all
 test-all: find-test-artifacts unit-test ui-test
 	@echo "✅ All tests completed."
-
-# === Dependencies check ===
-.PHONY: deps
-deps:
-	@echo "🔍 Checking dependencies..."
-	@command -v mint >/dev/null 2>&1 || { echo "❌ Error: Mint not installed. Please install: brew install mint"; exit 1; }
-	@command -v xcbeautify >/dev/null 2>&1 || { echo "❌ Error: xcbeautify not installed. Please install: brew install xcbeautify"; exit 1; }
-	@echo "✅ All required dependencies are available."
 
 # === Find existing artifacts ===
 .PHONY: find-test-artifacts
