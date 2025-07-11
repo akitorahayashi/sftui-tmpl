@@ -1,6 +1,6 @@
 # Makefile for TemplateApp iOS Project
 # 
-# [ユーザー向けコマンド]
+# [ユーザ向けコマンド]
 # --- Xcodeの操作 ---
 #   make boot                - ローカルシミュレータ（iPhone 16 Pro）を起動
 #   make run-debug           - デバッグビルドを作成し、ローカルシミュレータにインストール、起動
