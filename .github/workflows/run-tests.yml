@@ -31,11 +31,16 @@ jobs:
       - name: Generate Xcode Project
         run: mint run xcodegen generate
 
-      - name: Build for Testing & Upload Artifacts
+      - name: Build for Testing
         run: |
           make build-test
-          mkdir -p ci-outputs/test-results/DerivedData/Build/Products/
-          cp -R build/test-results/DerivedData/Build/Products/* ci-outputs/test-results/DerivedData/Build/Products/ || true
+          
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-products
+          path: build/test-results/DerivedData/Build/Products/
+          retention-days: 3
 
   unit-test:
     runs-on: macos-latest
@@ -71,7 +76,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: built-products
-          path: ${{ github.workspace }}/ci-outputs/test-results/DerivedData/Build/Products/
+          path: build/test-results/DerivedData/Build/Products/
 
       - name: Run Unit Tests
         id: unit_tests
@@ -119,7 +124,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: built-products
-          path: ${{ github.workspace }}/ci-outputs/test-results/DerivedData/Build/Products/
+          path: build/test-results/DerivedData/Build/Products/
 
       - name: Run UI Tests
         id: ui_tests

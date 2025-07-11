@@ -35,30 +35,11 @@ jobs:
         run: mint run xcodegen generate
 
       - name: Build Unsigned Archive
-        run: |
-          make build-release
-          mkdir -p ci-outputs/production/archives
-          cp -R build/archives/TemplateApp.xcarchive ci-outputs/production/archives/
-
-      - name: Verify Archive Contents
-        run: |
-          set -euo pipefail
-          echo "Checking archive contents..."
-          # Check if the specific .app directory exists within the archive's Products/Applications path
-          ARCHIVE_APP_PATH="./ci-outputs/production/archives/TemplateApp.xcarchive/Products/Applications/TemplateApp.app"
-          if [ ! -d "$ARCHIVE_APP_PATH" ]; then
-            echo "Error: 'TemplateApp.app' not found in expected archive location ($ARCHIVE_APP_PATH)."
-            # Optionally list contents again on error
-            echo "--- Archive Contents (on error) ---"
-            ls -lR ./ci-outputs/production/archives/TemplateApp.xcarchive || echo "Archive directory not found or empty."
-            exit 1
-          fi
-          echo "✅ Archive content verified."
+        run: make archive
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: unsigned-archive
-          path: |-
-            ./ci-outputs/production/archives/TemplateApp.xcarchive
+          path: build/archives/TemplateApp.xcarchive
           retention-days: 3
