@@ -1,12 +1,9 @@
 # Makefile for TemplateApp iOS Project
 # 
-# Available targets:
-#   make deps           - 依存関係をチェック
-#   make build-debug    - デバッグビルド
 #   make build-release  - リリースビルド
 #   make build-test     - テスト用ビルド
-#   make test-unit      - テスト用ビルド成果物を利用してユニットテストを実行
-#   make test-ui        - テスト用ビルド成果物を利用してUIテストを実行
+#   make unit-test      - テスト用ビルド成果物を利用してユニットテストを実行
+#   make ui-test        - テスト用ビルド成果物を利用してUIテストを実行
 #   make test-all       - テスト用ビルド成果物を利用して全てのテストを実行
 #   make archive        - リリース用アーカイブを作成
 
@@ -25,12 +22,20 @@ DERIVED_DATA_PATH := $(OUTPUT_DIR)/test-results/DerivedData
 
 # === Default target ===
 .PHONY: test-all
-test-all: find-artifacts test-unit test-ui
+test-all: find-test-artifacts unit-test ui-test
 	@echo "✅ All tests completed."
 
 # === Build for testing ===
+find-simulator = $(shell \
+	xcodebuild -showdestinations -scheme $(1) -project $(PROJECT_FILE) \
+	| grep 'id:' \
+	| sed -n 's/.*id:\([^,}]*\), OS:\([^,}]*\), name:\([^,}]*\).*/\1|\2|\3/p' \
+	| head -n 1)
+
 .PHONY: build-test
-build-test: find-simulator
+build-test:
+	$(eval SIMULATOR_RAW := $(call find-simulator,$(APP_SCHEME)))
+	@echo "Using Simulator: $(word 3,$(subst |, ,$(SIMULATOR_RAW))) (OS: $(word 2,$(subst |, ,$(SIMULATOR_RAW))), UDID: $(word 1,$(subst |, ,$(SIMULATOR_RAW))))"
 	@echo "🧹 Cleaning previous outputs..."
 	@rm -rf $(OUTPUT_DIR)
 	@mkdir -p $(OUTPUT_DIR)/test-results/unit $(OUTPUT_DIR)/test-results/ui $(OUTPUT_DIR)/archives
@@ -39,7 +44,7 @@ build-test: find-simulator
 	@set -o pipefail && xcodebuild build-for-testing \
 		-project $(PROJECT_FILE) \
 		-scheme $(APP_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(SIMULATOR_ID)" \
+		-destination "platform=iOS Simulator,id=$(word 1,$(subst |, ,$(SIMULATOR_RAW)))" \
 		-derivedDataPath $(DERIVED_DATA_PATH) \
 		-configuration Debug \
 		-skipMacroValidation \
@@ -49,7 +54,9 @@ build-test: find-simulator
 
 # === Debug build ===
 .PHONY: build-debug
-build-debug: find-simulator
+build-debug:
+	$(eval SIMULATOR_RAW := $(call find-simulator,$(APP_SCHEME)))
+	@echo "Using Simulator: $(word 3,$(subst |, ,$(SIMULATOR_RAW))) (OS: $(word 2,$(subst |, ,$(SIMULATOR_RAW))), UDID: $(word 1,$(subst |, ,$(SIMULATOR_RAW))))"
 	@echo "🧹 Cleaning previous outputs..."
 	@rm -rf $(OUTPUT_DIR)
 	@mkdir -p $(OUTPUT_DIR)/debug
@@ -58,7 +65,7 @@ build-debug: find-simulator
 	@set -o pipefail && xcodebuild build \
 		-project $(PROJECT_FILE) \
 		-scheme $(APP_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(SIMULATOR_ID)" \
+		-destination "platform=iOS Simulator,id=$(word 1,$(subst |, ,$(SIMULATOR_RAW)))" \
 		-derivedDataPath $(OUTPUT_DIR)/debug/DerivedData \
 		-configuration Debug \
 		-skipMacroValidation \
@@ -68,7 +75,9 @@ build-debug: find-simulator
 
 # === Release build ===
 .PHONY: build-release
-build-release: find-simulator
+build-release:
+	$(eval SIMULATOR_RAW := $(call find-simulator,$(APP_SCHEME)))
+	@echo "Using Simulator: $(word 3,$(subst |, ,$(SIMULATOR_RAW))) (OS: $(word 2,$(subst |, ,$(SIMULATOR_RAW))), UDID: $(word 1,$(subst |, ,$(SIMULATOR_RAW))))"
 	@echo "🧹 Cleaning previous outputs..."
 	@rm -rf $(OUTPUT_DIR)
 	@mkdir -p $(OUTPUT_DIR)/release
@@ -77,7 +86,7 @@ build-release: find-simulator
 	@set -o pipefail && xcodebuild build \
 		-project $(PROJECT_FILE) \
 		-scheme $(APP_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(SIMULATOR_ID)" \
+		-destination "platform=iOS Simulator,id=$(word 1,$(subst |, ,$(SIMULATOR_RAW)))" \
 		-derivedDataPath $(OUTPUT_DIR)/release/DerivedData \
 		-configuration Release \
 		-skipMacroValidation \
@@ -86,14 +95,16 @@ build-release: find-simulator
 	@echo "✅ Release build completed."
 
 # === Unit tests ===
-.PHONY: test-unit
-test-unit: find-simulator
+.PHONY: unit-test
+unit-test:
+	$(eval SIMULATOR_RAW := $(call find-simulator,$(UNIT_TEST_SCHEME)))
+	@echo "Using Simulator: $(word 3,$(subst |, ,$(SIMULATOR_RAW))) (OS: $(word 2,$(subst |, ,$(SIMULATOR_RAW))), UDID: $(word 1,$(subst |, ,$(SIMULATOR_RAW))))"
 	@echo "🧪 Running Unit Tests..."
 	@rm -rf $(UNIT_TEST_RESULTS)
 	@set -o pipefail && xcodebuild test-without-building \
 		-project $(PROJECT_FILE) \
 		-scheme $(UNIT_TEST_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(SIMULATOR_ID)" \
+		-destination "platform=iOS Simulator,id=$(word 1,$(subst |, ,$(SIMULATOR_RAW)))" \
 		-derivedDataPath $(DERIVED_DATA_PATH) \
 		-enableCodeCoverage NO \
 		-resultBundlePath $(UNIT_TEST_RESULTS) \
@@ -106,14 +117,16 @@ test-unit: find-simulator
 	@echo "✅ Unit tests completed. Results: $(UNIT_TEST_RESULTS)"
 
 # === UI tests ===
-.PHONY: test-ui
-test-ui: find-simulator
+.PHONY: ui-test
+ui-test:
+	$(eval SIMULATOR_RAW := $(call find-simulator,$(UI_TEST_SCHEME)))
+	@echo "Using Simulator: $(word 3,$(subst |, ,$(SIMULATOR_RAW))) (OS: $(word 2,$(subst |, ,$(SIMULATOR_RAW))), UDID: $(word 1,$(subst |, ,$(SIMULATOR_RAW))))"
 	@echo "🧪 Running UI Tests..."
 	@rm -rf $(UI_TEST_RESULTS)
 	@set -o pipefail && xcodebuild test-without-building \
 		-project $(PROJECT_FILE) \
 		-scheme $(UI_TEST_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(SIMULATOR_ID)" \
+		-destination "platform=iOS Simulator,id=$(word 1,$(subst |, ,$(SIMULATOR_RAW)))" \
 		-derivedDataPath $(DERIVED_DATA_PATH) \
 		-enableCodeCoverage NO \
 		-resultBundlePath $(UI_TEST_RESULTS) \
@@ -159,24 +172,11 @@ deps:
 	@echo "🔍 Checking dependencies..."
 	@command -v mint >/dev/null 2>&1 || { echo "❌ Error: Mint not installed. Please install: brew install mint"; exit 1; }
 	@command -v xcbeautify >/dev/null 2>&1 || { echo "❌ Error: xcbeautify not installed. Please install: brew install xcbeautify"; exit 1; }
-	@command -v jq >/dev/null 2>&1 || { echo "❌ Error: jq not installed. Please install: brew install jq"; exit 1; }
 	@echo "✅ All required dependencies are available."
 
-# === Find simulator ===
-.PHONY: find-simulator
-find-simulator:
-	@echo "🔍 Finding simulator..."
-	@chmod +x ./.github/scripts/find-simulator.sh
-	$(eval SIMULATOR_ID := $(shell ./.github/scripts/find-simulator.sh))
-	@if [ -z "$(SIMULATOR_ID)" ]; then \
-		echo "❌ Error: Could not find a suitable simulator"; \
-		exit 1; \
-	fi
-	@echo "✅ Using Simulator ID: $(SIMULATOR_ID)"
-
 # === Find existing artifacts ===
-.PHONY: find-artifacts
-find-artifacts:
+.PHONY: find-test-artifacts
+find-test-artifacts:
 	@echo "🔍 Finding existing build artifacts..."
 	@FOUND=false; \
 	for path in "$(OUTPUT_DIR)/test-results/DerivedData" "DerivedData" "$$HOME/Library/Developer/Xcode/DerivedData"; do \
