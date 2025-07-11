@@ -2,23 +2,23 @@
 # 
 # [ユーザー向けコマンド]
 # --- Xcodeの操作 ---
-#   make boot               - ローカルシミュレータ（iPhone 16 Pro）を起動
-#   make run-debug          - デバッグビルドを作成し、ローカルシミュレータにインストール＆起動
-#   make run-release        - リリースビルドを作成し、ローカルシミュレータにインストール＆起動
-#   make clean-proj         - Xcodeプロジェクトのビルドフォルダをクリーン
+#   make boot                - ローカルシミュレータ（iPhone 16 Pro）を起動
+#   make run-debug           - デバッグビルドを作成し、ローカルシミュレータにインストール、起動
+#   make run-release         - リリースビルドを作成し、ローカルシミュレータにインストール、起動
+#   make clean-proj          - Xcodeプロジェクトのビルドフォルダをクリーン
 #
 # --- ビルド関連 ---
-#   make build-test         - テスト用ビルド（テスト実行前に必須）
-#   make archive            - リリース用アーカイブ作成
+#   make build-test          - テスト用ビルド（テスト実行前に必須）
+#   make archive             - リリース用のアーカイブを作成
 #
 # --- テスト関連 ---
-#   make unit-test          - ユニットテスト実行
-#   make ui-test            - UIテスト実行
-#   make test-all           - 全テスト一括実行
+#   make unit-test           - ユニットテストを実行
+#   make ui-test             - UIテストを実行
+#   make test-all            - 全テストを実行
 #
 # [内部ワークフロー用コマンド]
-#   make deps               - 依存関係チェック
-#   make find-test-artifacts- テスト成果物探索
+#   make deps                - 依存関係をチェック
+#   make find-test-artifacts - テストの成果物探索
 #
 # === Configuration ===
 OUTPUT_DIR := build
@@ -99,7 +99,7 @@ run-release:
 		CODE_SIGNING_ALLOWED=NO \
 		| xcbeautify
 	@echo "✅ Release build completed."
-	@echo "📲 Installing release build to simulator ($(LOCAL_SIMULATOR_NAME))..."
+	@echo "📲 リリースビルドをシミュレータ（$(LOCAL_SIMULATOR_NAME)）にインストールしています..."
 	xcrun simctl install $(LOCAL_SIMULATOR_UDID) $(OUTPUT_DIR)/release/DerivedData/Build/Products/Release-iphonesimulator/TemplateApp.app
 	@echo "✅ Installed release build."
 	@echo "🚀 Launching app ($(APP_BUNDLE_ID)) on simulator ($(LOCAL_SIMULATOR_NAME))..."
@@ -163,7 +163,7 @@ archive:
 .PHONY: unit-test
 unit-test:
 	$(eval SIMULATOR_RAW := $(call select-simulator,$(UNIT_TEST_SCHEME)))
-	@echo "Using Simulator: $(word 3,$(subst |, ,$(SIMULATOR_RAW))) (OS: $(word 2,$(subst |, ,$(SIMULATOR_RAW))), UDID: $(word 1,$(subst |, ,$(SIMULATOR_RAW))))"
+	@echo "Using Simulator UDID: $(SIMULATOR_RAW)"
 	@echo "🧪 Running Unit Tests..."
 	@rm -rf $(UNIT_TEST_RESULTS)
 	@set -o pipefail && xcodebuild test-without-building \
@@ -185,7 +185,7 @@ unit-test:
 .PHONY: ui-test
 ui-test:
 	$(eval SIMULATOR_RAW := $(call select-simulator,$(UI_TEST_SCHEME)))
-	@echo "Using Simulator: $(word 3,$(subst |, ,$(SIMULATOR_RAW))) (OS: $(word 2,$(subst |, ,$(SIMULATOR_RAW))), UDID: $(word 1,$(subst |, ,$(SIMULATOR_RAW))))"
+	@echo "Using Simulator UDID: $(SIMULATOR_RAW)"
 	@echo "🧪 Running UI Tests..."
 	@rm -rf $(UI_TEST_RESULTS)
 	@set -o pipefail && xcodebuild test-without-building \
