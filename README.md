@@ -17,7 +17,7 @@ SwiftUI ベースの iOS アプリテンプレートです
 | `MARKETING_VERSION` | `1.0.0` | アプリのマーケティングバージョン |
 | `CURRENT_PROJECT_VERSION` | `1` | アプリのビルド番号 |
 | `IPHONEOS_DEPLOYMENT_TARGET` | `15.0` | iOSのデプロイメントターゲット |
-| `SWIFT_VERSION` | `5.0` | 使用するSwiftのバージョン |
+| `SWIFT_VERSION` | `5.9` | 使用するSwiftのバージョン |
 | `targets.TemplateApp.settings.PRODUCT_BUNDLE_IDENTIFIER` | `com.example.templateapp` | アプリ本体のバンドルID |
 | `targets.TemplateApp.sources` | `[TemplateApp]` | アプリ本体のソースディレクトリ。ディレクトリ名変更に合わせて修正 |
 | `targets.TemplateApp.settings.INFOPLIST_FILE` | `TemplateApp/Info.plist` | アプリ本体のInfo.plistパス。ディレクトリ名変更に合わせて修正 |
