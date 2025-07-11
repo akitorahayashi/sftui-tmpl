@@ -34,5 +34,5 @@ Package.resolved
 *.mobileprovision
 /.cursor/
 
-# CI/CD output directory
-ci-outputs/ 
+# Build output directory
+build/ 

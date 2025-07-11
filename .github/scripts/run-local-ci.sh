@@ -10,7 +10,7 @@
 set -euo pipefail
 
 # === Configuration ===
-OUTPUT_DIR="ci-outputs"
+OUTPUT_DIR="build"
 PROJECT_FILE="TemplateApp.xcodeproj"
 APP_SCHEME="TemplateApp"
 UNIT_TEST_SCHEME="TemplateAppTests"
@@ -164,8 +164,7 @@ fi
 echo "Creating directories..."
 mkdir -p "$OUTPUT_DIR/test-results/unit" \
          "$OUTPUT_DIR/test-results/ui" \
-         "$OUTPUT_DIR/production" \
-         "$OUTPUT_DIR/production/archives"
+         "$OUTPUT_DIR/archives" 
 success "Directories created under $OUTPUT_DIR."
 
 # === Dependency Check ===
@@ -221,23 +220,23 @@ if [ "$run_unit_tests" = true ] || [ "$run_ui_tests" = true ]; then
   echo "Using Simulator ID: $SIMULATOR_ID"
   success "Simulator selected."
 
-  # テスト用にビルド (スキップされていない場合)
-  if [ "$skip_build_for_testing" = false ]; then
-    echo "Building for testing..."
-    set -o pipefail && xcodebuild build-for-testing \
-      -project "$PROJECT_FILE" \
-      -scheme "$APP_SCHEME" \
-      -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
-      -derivedDataPath "$OUTPUT_DIR/test-results/DerivedData" \
-      -configuration Debug \
-      -skipMacroValidation \
-      CODE_SIGNING_ALLOWED=NO \
-    | xcbeautify
-    success "Build for testing completed."
-  else
-      echo "Skipping build for testing as requested (--test-without-building)."
-      success "Using existing build artifacts."
-  fi
+    # テスト用にビルド (スキップされていない場合)
+    if [ "$skip_build_for_testing" = false ]; then
+      echo "Building for testing..."
+      set -o pipefail && xcodebuild build-for-testing \
+        -project "$PROJECT_FILE" \
+        -scheme "$APP_SCHEME" \
+        -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
+        -derivedDataPath "$OUTPUT_DIR/test-results/DerivedData" \
+        -configuration Debug \
+        -skipMacroValidation \
+        CODE_SIGNING_ALLOWED=NO \
+      | xcbeautify
+      success "Build for testing completed."
+    else
+        echo "Skipping build for testing as requested (--test-without-building)."
+        success "Using existing build artifacts."
+    fi
 
   # Unitテストを実行
   if [ "$run_unit_tests" = true ]; then
@@ -302,8 +301,8 @@ if [ "$run_archive" = true ]; then
     -scheme "$APP_SCHEME" \
     -configuration Release \
     -destination "generic/platform=iOS Simulator" \
-    -archivePath "$OUTPUT_DIR/production/archives/TemplateApp.xcarchive" \
-    -derivedDataPath "$OUTPUT_DIR/production/DerivedData" \
+    -archivePath "$OUTPUT_DIR/archives/TemplateApp.xcarchive" \
+    -derivedDataPath "$OUTPUT_DIR/archives/DerivedData" \
     -skipMacroValidation \
     CODE_SIGNING_ALLOWED=NO \
     archive \
@@ -312,7 +311,7 @@ if [ "$run_archive" = true ]; then
 
   # アーカイブ内容を検証
   echo "Verifying archive contents..."
-  ARCHIVE_PATH="$OUTPUT_DIR/production/archives/TemplateApp.xcarchive"
+  ARCHIVE_PATH="$OUTPUT_DIR/archives/TemplateApp.xcarchive"
   ARCHIVE_APP_PATH="$ARCHIVE_PATH/Products/Applications/$APP_SCHEME.app"
   if [ ! -d "$ARCHIVE_APP_PATH" ]; then
     echo "Error: '$APP_SCHEME.app' not found in expected archive location ($ARCHIVE_APP_PATH)."
