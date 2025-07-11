@@ -163,7 +163,7 @@ archive:
 .PHONY: unit-test
 unit-test:
 	$(eval SIMULATOR_RAW := $(call select-simulator,$(UNIT_TEST_SCHEME)))
-	@echo "Using Simulator: $(word 3,$(subst |, ,$(SIMULATOR_RAW))) (OS: $(word 2,$(subst |, ,$(SIMULATOR_RAW))), UDID: $(word 1,$(subst |, ,$(SIMULATOR_RAW))))"
+	@echo "Using Simulator UDID: $(SIMULATOR_RAW)"
 	@echo "🧪 Running Unit Tests..."
 	@rm -rf $(UNIT_TEST_RESULTS)
 	@set -o pipefail && xcodebuild test-without-building \
@@ -185,7 +185,7 @@ unit-test:
 .PHONY: ui-test
 ui-test:
 	$(eval SIMULATOR_RAW := $(call select-simulator,$(UI_TEST_SCHEME)))
-	@echo "Using Simulator: $(word 3,$(subst |, ,$(SIMULATOR_RAW))) (OS: $(word 2,$(subst |, ,$(SIMULATOR_RAW))), UDID: $(word 1,$(subst |, ,$(SIMULATOR_RAW))))"
+	@echo "Using Simulator UDID: $(SIMULATOR_RAW)"
 	@echo "🧪 Running UI Tests..."
 	@rm -rf $(UI_TEST_RESULTS)
 	@set -o pipefail && xcodebuild test-without-building \
