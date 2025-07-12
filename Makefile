@@ -28,8 +28,8 @@ UI_TEST_SCHEME := TemplateAppUITests
 
 # CI用にシミュレータを選ぶ関数
 select-simulator = $(shell \
-    xcrun simctl list devices available | \
-    grep -A1 "iPhone" | grep -Eo "[A-F0-9-]{36}" | head -n 1 \
+	xcrun simctl list devices available | \
+	grep -A1 "iPhone" | grep -Eo "[A-F0-9-]{36}" | head -n 1 \
 )
 
 
@@ -50,8 +50,16 @@ APP_BUNDLE_ID := com.example.templateapp
 # === Boot simulator ===
 .PHONY: boot
 boot:
+ifndef LOCAL_SIMULATOR_UDID
+	$(error LOCAL_SIMULATOR_UDID is not set. Please uncomment and set it in the Makefile)
+endif
 	@echo "🚀 Booting local simulator: $(LOCAL_SIMULATOR_NAME) (OS: $(LOCAL_SIMULATOR_OS), UDID: $(LOCAL_SIMULATOR_UDID))"
-	xcrun simctl boot $(LOCAL_SIMULATOR_UDID)
+	@if xcrun simctl list devices | grep -q "$(LOCAL_SIMULATOR_UDID) (Booted)"; then \
+		echo "⚡️ Simulator is already booted."; \
+	else \
+		xcrun simctl boot $(LOCAL_SIMULATOR_UDID); \
+		echo "✅ Simulator booted."; \
+	fi
 	open -a Simulator
 	@echo "✅ Local simulator boot command executed."
 
@@ -98,7 +106,7 @@ run-release:
 		CODE_SIGNING_ALLOWED=NO \
 		| xcbeautify
 	@echo "✅ Release build completed."
-	@echo "📲 リリースビルドをシミュレータ（$(LOCAL_SIMULATOR_NAME)）にインストールしています..."
+	@echo "📲 Installing release build to simulator ($(LOCAL_SIMULATOR_NAME))..."
 	xcrun simctl install $(LOCAL_SIMULATOR_UDID) $(OUTPUT_DIR)/release/DerivedData/Build/Products/Release-iphonesimulator/TemplateApp.app
 	@echo "✅ Installed release build."
 	@echo "🚀 Launching app ($(APP_BUNDLE_ID)) on simulator ($(LOCAL_SIMULATOR_NAME))..."

@@ -4,7 +4,7 @@ SwiftUI ベースの iOS アプリテンプレートです
 
 ## カスタマイズの手順
 
-このテンプレートを新しいプロジェクトで使用する際は、まず最初にルート直下にある `TemplateApp` ディレクトリの名前を、あなたのプロジェクト名に変更してください（例: `MyApp`）。同様に `TemplateAppTests` や `TemplateAppUITests` ディレクトリも、新しいテストターゲット名に合わせて変更することをおすすめします（例: `MyAppTests`, `MyAppUITests`）。これらの変更は、後述する多くの設定ファイル中のパスの記述に影響します。
+このテンプレートを新しいプロジェクトで使用する際は、まず最初にルート直下にある `TemplateApp` ディレクトリの名前を、あなたのプロジェクト名に変更してください（例: `MyApp`）。そして、`TemplateApp/TemplateApp.swift` のファイル名も、プロジェクト名に合わせて変更してください（例: `MyApp/MyApp.swift`）。同様に `TemplateAppTests` や `TemplateAppUITests` ディレクトリも、新しいテストターゲット名に合わせて変更することをおすすめします（例: `MyAppTests`, `MyAppUITests`）。これらの変更は、後述する多くの設定ファイル中のパスの記述に影響します。
 
 また、このテンプレートはサンプルとしての設定値が含まれています。新しいプロジェクトに合わせて、必要に応じて以下の項目を調整してください。
 
@@ -86,9 +86,6 @@ SwiftUI ベースの iOS アプリテンプレートです
 | `CFBundleDisplayName` | `TemplateAppUITests` | project.ymlのターゲット名と連動 |
 | `CFBundleShortVersionString` | `1.0.0` | project.ymlの `MARKETING_VERSION` と連動 |
 | `CFBundleVersion` | `1` | project.ymlの `CURRENT_PROJECT_VERSION` と連動 |
-
-**注意:**
-- `project.yml` を変更した後は、`mint run xcodegen generate` コマンドを実行してプロジェクトファイルとこれらのInfo.plistを更新してください。
 
 ### .swiftlint.yml
 

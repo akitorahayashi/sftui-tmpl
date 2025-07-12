@@ -33,6 +33,3 @@ Package.resolved
 *.cer
 *.mobileprovision
 /.cursor/
-
-# Build output directory
-build/ 
