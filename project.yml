@@ -24,7 +24,7 @@ targets:
     sources:
       - TemplateApp
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.example.templateapp
+      PRODUCT_BUNDLE_IDENTIFIER: com.example.TemplateApp
       INFOPLIST_FILE: TemplateApp/Info.plist
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
       DEVELOPMENT_ASSET_PATHS: TemplateApp/Resources
@@ -38,7 +38,7 @@ targets:
     dependencies:
       - target: TemplateApp
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.example.templateapp.tests
+      PRODUCT_BUNDLE_IDENTIFIER: com.example.TemplateAppTests
       INFOPLIST_FILE: TemplateAppTests/Info.plist
 
   TemplateAppUITests:
@@ -50,7 +50,7 @@ targets:
     dependencies:
       - target: TemplateApp
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.example.templateapp.uitests
+      PRODUCT_BUNDLE_IDENTIFIER: com.example.TemplateAppUITests
       INFOPLIST_FILE: TemplateAppUITests/Info.plist
 
 schemes:
