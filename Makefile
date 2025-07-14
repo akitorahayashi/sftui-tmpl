@@ -203,7 +203,7 @@ unit-test:
 	@echo "Using Simulator UDID: $(SIMULATOR_RAW)"
 	@echo "🧪 Running Unit Tests..."
 	@rm -rf $(UNIT_TEST_RESULTS)
-	@set -o pipefail && xcodebuild test-without-building \
+	@set -o pipefail && xcodebuild test \
 		-project $(PROJECT_FILE) \
 		-scheme $(UNIT_TEST_SCHEME) \
 		-destination "platform=iOS Simulator,id=$(word 1,$(subst |, ,$(SIMULATOR_RAW)))" \
@@ -225,6 +225,50 @@ ui-test:
 	@echo "Using Simulator UDID: $(SIMULATOR_RAW)"
 	@echo "🧪 Running UI Tests..."
 	@rm -rf $(UI_TEST_RESULTS)
+	@set -o pipefail && xcodebuild test \
+		-project $(PROJECT_FILE) \
+		-scheme $(UI_TEST_SCHEME) \
+		-destination "platform=iOS Simulator,id=$(word 1,$(subst |, ,$(SIMULATOR_RAW)))" \
+		-derivedDataPath $(DERIVED_DATA_PATH) \
+		-enableCodeCoverage NO \
+		-resultBundlePath $(UI_TEST_RESULTS) \
+		CODE_SIGNING_ALLOWED=NO \
+		| xcbeautify
+	@if [ ! -d "$(UI_TEST_RESULTS)" ]; then \
+		echo "❌ Error: UI test result bundle not found"; \
+		exit 1; \
+	fi
+	@echo "✅ UI tests completed. Results: $(UI_TEST_RESULTS)"
+
+# === Unit tests without building ===
+.PHONY: unit-test-without-building
+unit-test-without-building: find-test-artifacts
+	$(eval SIMULATOR_RAW := $(call select-simulator,$(UNIT_TEST_SCHEME)))
+	@echo "Using Simulator UDID: $(SIMULATOR_RAW)"
+	@echo "🧪 Running Unit Tests..."
+	@rm -rf $(UNIT_TEST_RESULTS)
+	@set -o pipefail && xcodebuild test-without-building \
+		-project $(PROJECT_FILE) \
+		-scheme $(UNIT_TEST_SCHEME) \
+		-destination "platform=iOS Simulator,id=$(word 1,$(subst |, ,$(SIMULATOR_RAW)))" \
+		-derivedDataPath $(DERIVED_DATA_PATH) \
+		-enableCodeCoverage NO \
+		-resultBundlePath $(UNIT_TEST_RESULTS) \
+		CODE_SIGNING_ALLOWED=NO \
+		| xcbeautify
+	@if [ ! -d "$(UNIT_TEST_RESULTS)" ]; then \
+		echo "❌ Error: Unit test result bundle not found"; \
+		exit 1; \
+	fi
+	@echo "✅ Unit tests completed. Results: $(UNIT_TEST_RESULTS)"
+
+# === UI tests without building ===
+.PHONY: ui-test-without-building
+ui-test-without-building:
+	$(eval SIMULATOR_RAW := $(call select-simulator,$(UI_TEST_SCHEME)))
+	@echo "Using Simulator UDID: $(SIMULATOR_RAW)"
+	@echo "🧪 Running UI Tests..."
+	@rm -rf $(UI_TEST_RESULTS)
 	@set -o pipefail && xcodebuild test-without-building \
 		-project $(PROJECT_FILE) \
 		-scheme $(UI_TEST_SCHEME) \
@@ -242,7 +286,7 @@ ui-test:
 
 # === All tests ===
 .PHONY: test-all
-test-all: find-test-artifacts unit-test ui-test
+test-all: build-test unit-test-without-building ui-test-without-building
 	@echo "✅ All tests completed."
 
 # === Find existing artifacts ===
