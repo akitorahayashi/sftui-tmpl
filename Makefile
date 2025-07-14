@@ -1,23 +1,25 @@
 # [ユーザ向けコマンド]
-# --- Xcodeの操作 ---
-#   make boot                - ローカルシミュレータ（iPhone 16 Pro）を起動
-#   make run-debug           - デバッグビルドを作成し、ローカルシミュレータにインストール、起動
-#   make run-release         - リリースビルドを作成し、ローカルシミュレータにインストール、起動
-#   make clean-proj          - Xcodeプロジェクトのビルドフォルダをクリーン
-#   make resolve-pkg         - SwiftPMキャッシュ・依存関係・ビルドをリセット
-#   make open-proj           - Xcodeでプロジェクトを開く
+# --- Xcode操作 ---
+#   make boot                      - ローカルシミュレータ（iPhone 16 Pro）を起動
+#   make run-debug                 - デバッグビルドを作成し、ローカルシミュレータにインストール、起動
+#   make run-release               - リリースビルドを作成し、ローカルシミュレータにインストール、起動
+#   make clean-proj                - Xcodeプロジェクトのビルドフォルダをクリーン
+#   make resolve-pkg               - SwiftPMキャッシュ・依存関係・ビルドをリセット
+#   make open-proj                 - Xcodeでプロジェクトを開く
 #
-# --- ビルド関連 ---
-#   make build-test          - テスト用ビルド（テスト実行前に必須）
-#   make archive             - リリース用のアーカイブを作成
+# --- ビルド ---
+#   make build-test                - テスト用のビルドを実行
+#   make archive                   - リリース用のアーカイブを作成
 #
-# --- テスト関連 ---
-#   make unit-test           - ユニットテストを実行
-#   make ui-test             - UIテストを実行
-#   make test-all            - 全テストを実行
+# --- テスト ---
+#   make unit-test                 - ユニットテストをビルドして実行
+#   make ui-test                   - UIテストをビルドして実行
+#   make test-all                  - 全テストをビルドして実行
+#   make unit-test-without-building - ユニットテストを実行（ビルド済みアーティファクトを利用）
+#   make ui-test-without-building  - UIテストを実行（ビルド済みアーティファクトを利用）
 #
 # [内部ワークフロー用コマンド]
-#   make find-test-artifacts - テストの成果物を探す
+#   make find-test-artifacts       - テストの成果物を探す
 
 # === Configuration ===
 OUTPUT_DIR := build
