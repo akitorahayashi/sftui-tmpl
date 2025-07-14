@@ -1,11 +1,11 @@
-# Makefile for TemplateApp iOS Project
-# 
 # [ユーザ向けコマンド]
 # --- Xcodeの操作 ---
 #   make boot                - ローカルシミュレータ（iPhone 16 Pro）を起動
 #   make run-debug           - デバッグビルドを作成し、ローカルシミュレータにインストール、起動
 #   make run-release         - リリースビルドを作成し、ローカルシミュレータにインストール、起動
 #   make clean-proj          - Xcodeプロジェクトのビルドフォルダをクリーン
+#   make resolve-pkg         - SwiftPMキャッシュ・依存関係・ビルドをリセット
+#   make open-proj           - Xcodeでプロジェクトを開く
 #
 # --- ビルド関連 ---
 #   make build-test          - テスト用ビルド（テスト実行前に必須）
@@ -17,8 +17,8 @@
 #   make test-all            - 全テストを実行
 #
 # [内部ワークフロー用コマンド]
-#   make find-test-artifacts - テストの成果物探索
-#
+#   make find-test-artifacts - テストの成果物を探す
+
 # === Configuration ===
 OUTPUT_DIR := build
 PROJECT_FILE := TemplateApp.xcodeproj
@@ -63,6 +63,7 @@ endif
 	open -a Simulator
 	@echo "✅ Local simulator boot command executed."
 
+# === Run debug build ===
 .PHONY: run-debug
 run-debug:
 	@echo "Using Local Simulator: $(LOCAL_SIMULATOR_NAME) (OS: $(LOCAL_SIMULATOR_OS), UDID: $(LOCAL_SIMULATOR_UDID))"
@@ -88,6 +89,7 @@ run-debug:
 	xcrun simctl launch $(LOCAL_SIMULATOR_UDID) $(APP_BUNDLE_ID)
 	@echo "✅ App launched."
 
+# === Run release build ===
 .PHONY: run-release
 run-release:
 	@echo "Using Local Simulator: $(LOCAL_SIMULATOR_NAME) (OS: $(LOCAL_SIMULATOR_OS), UDID: $(LOCAL_SIMULATOR_UDID))"
@@ -112,6 +114,34 @@ run-release:
 	@echo "🚀 Launching app ($(APP_BUNDLE_ID)) on simulator ($(LOCAL_SIMULATOR_NAME))..."
 	xcrun simctl launch $(LOCAL_SIMULATOR_UDID) $(APP_BUNDLE_ID)
 	@echo "✅ App launched."
+
+# === Clean project ===
+.PHONY: clean-proj
+clean-proj:
+	@echo "🧹 Cleaning Xcode project build folder..."
+	xcodebuild clean \
+		-project $(PROJECT_FILE) \
+		-scheme $(APP_SCHEME) \
+		-destination "platform=iOS Simulator,id=$(LOCAL_SIMULATOR_UDID)"
+	@echo "✅ Project build folder cleaned."
+
+# === Resolve & Reset SwiftPM/Xcode Packages ===
+.PHONY: resolve-pkg
+resolve-pkg:
+	@echo "🧹 Removing SwiftPM build and cache..."
+	rm -rf .build
+	rm -rf ~/Library/Caches/org.swift.swiftpm
+	@echo "✅ SwiftPM build and cache removed."
+	@echo "🔄 Resolving Swift package dependencies..."
+	xcodebuild -resolvePackageDependencies -project $(PROJECT_FILE)
+	@echo "✅ Package dependencies resolved."
+
+# === Open project in Xcode ===
+.PHONY: open-proj
+open-proj:
+	@echo "📖 Opening $(PROJECT_FILE) in Xcode..."
+	@open $(PROJECT_FILE)
+	@echo "✅ Project opened."
 
 # === Build for testing ===
 .PHONY: build-test
@@ -236,12 +266,3 @@ find-test-artifacts:
 		echo "❌ Error: No existing build artifacts found. Please run 'make build-test' first."; \
 		exit 1; \
 	fi
-
-.PHONY: clean-proj
-clean-proj:
-	@echo "🧹 Cleaning Xcode project build folder..."
-	xcodebuild clean \
-		-project $(PROJECT_FILE) \
-		-scheme $(APP_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(LOCAL_SIMULATOR_UDID)"
-	@echo "✅ Project build folder cleaned."
