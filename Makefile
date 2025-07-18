@@ -68,6 +68,7 @@ endif
 # === Run debug build ===
 .PHONY: run-debug
 run-debug:
+	make boot
 	@echo "Using Local Simulator: $(LOCAL_SIMULATOR_NAME) (OS: $(LOCAL_SIMULATOR_OS), UDID: $(LOCAL_SIMULATOR_UDID))"
 	@echo "🧹 Cleaning previous outputs..."
 	@rm -rf $(OUTPUT_DIR)
@@ -94,6 +95,7 @@ run-debug:
 # === Run release build ===
 .PHONY: run-release
 run-release:
+	make boot
 	@echo "Using Local Simulator: $(LOCAL_SIMULATOR_NAME) (OS: $(LOCAL_SIMULATOR_OS), UDID: $(LOCAL_SIMULATOR_UDID))"
 	@echo "🧹 Cleaning previous outputs..."
 	@rm -rf $(OUTPUT_DIR)
