@@ -54,7 +54,7 @@ APP_BUNDLE_ID := com.example.templateapp
 .PHONY: boot
 boot:
 ifndef LOCAL_SIMULATOR_UDID
-	$(error LOCAL_SIMULATOR_UDID is not set. Please uncomment and set it in the Makefile)
+	$(error LOCAL_SIMULATOR_UDID is not set. Please set it in your .env)
 endif
 	@echo "🚀 Booting local simulator: $(LOCAL_SIMULATOR_NAME) (OS: $(LOCAL_SIMULATOR_OS), UDID: $(LOCAL_SIMULATOR_UDID))"
 	@if xcrun simctl list devices | grep -q "$(LOCAL_SIMULATOR_UDID) (Booted)"; then \
@@ -298,7 +298,7 @@ test-all: build-test unit-test-without-building ui-test-without-building
 .PHONY: find-test-artifacts
 find-test-artifacts:
 	@echo "🔍 Finding existing build artifacts..."
-	@if [ -d "$(OUTPUT_DIR)/test-results/DerivedData" ] && find "$(OUTPUT_DIR)/test-results/DerivedData" -name "TemplateApp.app" -type d | head -1 | grep -q "TemplateApp.app"; then \
+	@if find "$(OUTPUT_DIR)/test-results/DerivedData" -name "TemplateApp.app" -type d -print -quit | grep -q .; then \
 		echo "✅ Found existing build artifacts at: $(OUTPUT_DIR)/test-results/DerivedData"; \
 	else \
 		echo "❌ Error: No existing build artifacts found. Please run 'make build-test' first."; \
