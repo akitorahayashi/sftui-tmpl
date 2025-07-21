@@ -42,9 +42,10 @@ UI_TEST_RESULTS := $(OUTPUT_DIR)/test-results/ui/TestResults.xcresult
 DERIVED_DATA_PATH := $(OUTPUT_DIR)/test-results/DerivedData
 
 # === Local Simulator ===
-LOCAL_SIMULATOR_NAME := iPhone 16 Pro
-LOCAL_SIMULATOR_OS := 26.0
-LOCAL_SIMULATOR_UDID := 5495CFE4-9EBC-45C5-8F85-37E0E143B3CC
+# .envファイルが存在すれば読み込む
+ifneq (,$(wildcard ./.env))
+    include .env
+endif
 
 # === App Bundle Identifier ===
 APP_BUNDLE_ID := com.example.templateapp
@@ -53,7 +54,7 @@ APP_BUNDLE_ID := com.example.templateapp
 .PHONY: boot
 boot:
 ifndef LOCAL_SIMULATOR_UDID
-	$(error LOCAL_SIMULATOR_UDID is not set. Please uncomment and set it in the Makefile)
+	$(error LOCAL_SIMULATOR_UDID is not set. Please set it in your .env)
 endif
 	@echo "🚀 Booting local simulator: $(LOCAL_SIMULATOR_NAME) (OS: $(LOCAL_SIMULATOR_OS), UDID: $(LOCAL_SIMULATOR_UDID))"
 	@if xcrun simctl list devices | grep -q "$(LOCAL_SIMULATOR_UDID) (Booted)"; then \
@@ -297,20 +298,9 @@ test-all: build-test unit-test-without-building ui-test-without-building
 .PHONY: find-test-artifacts
 find-test-artifacts:
 	@echo "🔍 Finding existing build artifacts..."
-	@FOUND=false; \
-	for path in "$(OUTPUT_DIR)/test-results/DerivedData" "DerivedData" "$$HOME/Library/Developer/Xcode/DerivedData"; do \
-		if [ -d "$$path" ] && find "$$path" -name "TemplateApp.app" -type d | head -1 | grep -q "TemplateApp.app"; then \
-			echo "✅ Found existing build artifacts at: $$path"; \
-			if [ "$$path" != "$(OUTPUT_DIR)/test-results/DerivedData" ]; then \
-				echo "🔗 Linking artifacts to $(OUTPUT_DIR)/test-results/DerivedData"; \
-				mkdir -p $(OUTPUT_DIR)/test-results; \
-				ln -sfn "$$path" "$(OUTPUT_DIR)/test-results/DerivedData"; \
-			fi; \
-			FOUND=true; \
-			break; \
-		fi; \
-	done; \
-	if [ "$$FOUND" = false ]; then \
+	@if find "$(OUTPUT_DIR)/test-results/DerivedData" -name "TemplateApp.app" -type d -print -quit | grep -q .; then \
+		echo "✅ Found existing build artifacts at: $(OUTPUT_DIR)/test-results/DerivedData"; \
+	else \
 		echo "❌ Error: No existing build artifacts found. Please run 'make build-test' first."; \
 		exit 1; \
 	fi
