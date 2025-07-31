@@ -3,9 +3,9 @@
 #   make boot                      - ローカルシミュレータ（iPhone 16 Pro）を起動
 #   make run-debug                 - デバッグビルドを作成し、ローカルシミュレータにインストール、起動
 #   make run-release               - リリースビルドを作成し、ローカルシミュレータにインストール、起動
-#   make clean-proj                - Xcodeプロジェクトのビルドフォルダをクリーン
+#   make clean                - Xcodeプロジェクトのビルドフォルダをクリーン
 #   make resolve-pkg               - SwiftPMキャッシュ・依存関係・ビルドをリセット
-#   make open-proj                 - Xcodeでプロジェクトを開く
+#   make open                 - Xcodeでプロジェクトを開く
 #
 # --- ビルド ---
 #   make build-test                - テスト用のビルドを実行
@@ -49,7 +49,7 @@ DERIVED_DATA_PATH := $(OUTPUT_DIR)/test-results/DerivedData
 # === Local Simulator ===
 # .envファイルが存在すれば読み込む
 ifneq (,$(wildcard ./.env))
-    include .env
+	include .env
 endif
 
 # === App Bundle Identifier ===
@@ -126,8 +126,8 @@ run-release:
 	@echo "✅ App launched."
 
 # === Clean project ===
-.PHONY: clean-proj
-clean-proj:
+.PHONY: clean
+clean:
 	@echo "🧹 Cleaning Xcode project build folder..."
 	xcodebuild clean \
 		-project $(PROJECT_FILE) \
@@ -147,8 +147,8 @@ resolve-pkg:
 	@echo "✅ Package dependencies resolved."
 
 # === Open project in Xcode ===
-.PHONY: open-proj
-open-proj:
+.PHONY: open
+open:
 	@echo "📖 Opening $(PROJECT_FILE) in Xcode..."
 	@open $(PROJECT_FILE)
 	@echo "✅ Project opened."
