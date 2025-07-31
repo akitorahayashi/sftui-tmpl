@@ -17,6 +17,11 @@
 #   make test-all                  - 全テストをビルドして実行
 #   make unit-test-without-building - ユニットテストを実行（ビルド済みアーティファクトを利用）
 #   make ui-test-without-building  - UIテストを実行（ビルド済みアーティファクトを利用）
+# 
+# --- Code Style ---
+#   make format                - コードをフォーマット
+#   make format-check          - コードのフォーマットをチェック
+#   make lint                  - lintを実行
 #
 # [内部ワークフロー用コマンド]
 #   make find-test-artifacts       - テストの成果物を探す
@@ -304,3 +309,22 @@ find-test-artifacts:
 		echo "❌ Error: No existing build artifacts found. Please run 'make build-test' first."; \
 		exit 1; \
 	fi
+
+# === Code Style ===
+.PHONY: format
+format:
+	@echo "🎨 Running swiftformat (mint)..."
+	mint run swiftformat .
+	@echo "✅ Code formatted."
+
+.PHONY: format-check
+format-check:
+	@echo "🔍 Checking code format with swiftformat (mint)..."
+	mint run swiftformat --lint .
+	@echo "✅ Format check completed."
+
+.PHONY: lint
+lint:
+	@echo "🔍 Running swiftlint (mint)..."
+	mint run swiftlint --strict
+	@echo "✅ Lint completed."
