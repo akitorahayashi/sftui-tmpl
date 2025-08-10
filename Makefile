@@ -1,67 +1,55 @@
-# [ユーザ向けコマンド]
-# --- Xcode操作 ---
-#   make boot                      - ローカルシミュレータ（iPhone 16 Pro）を起動
-#   make run-debug                 - デバッグビルドを作成し、ローカルシミュレータにインストール、起動
-#   make run-release               - リリースビルドを作成し、ローカルシミュレータにインストール、起動
-#   make clean                - Xcodeプロジェクトのビルドフォルダをクリーン
-#   make resolve-pkg               - SwiftPMキャッシュ・依存関係・ビルドをリセット
-#   make open                 - Xcodeでプロジェクトを開く
-#
-# --- ビルド ---
-#   make build-test                - テスト用のビルドを実行
-#   make archive                   - リリース用のアーカイブを作成
-#
-# --- テスト ---
-#   make unit-test                 - ユニットテストをビルドして実行
-#   make ui-test                   - UIテストをビルドして実行
-#   make test-all                  - 全テストをビルドして実行
-#   make unit-test-without-building - ユニットテストを実行（ビルド済みアーティファクトを利用）
-#   make ui-test-without-building  - UIテストを実行（ビルド済みアーティファクトを利用）
-# 
-# --- Code Style ---
-#   make format                - コードをフォーマット
-#   make format-check          - コードのフォーマットをチェック
-#   make lint                  - lintを実行
-#
-# [内部ワークフロー用コマンド]
-#   make find-test-artifacts       - テストの成果物を探す
+# --- HELP ---
+.PHONY: help
+help:
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Available targets:"
+	@awk 'BEGIN {FS = ":.*?## "; OFS=" "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-# === Configuration ===
-OUTPUT_DIR := build
-PROJECT_FILE := TemplateApp.xcodeproj
-APP_SCHEME := TemplateApp
-UNIT_TEST_SCHEME := TemplateAppTests
-UI_TEST_SCHEME := TemplateAppUITests
+# Load environment variables from .env file if it exists
+-include .env
 
-# CI用にシミュレータを選ぶ関数
-select-simulator = $(shell \
-	xcrun simctl list devices available | \
-	grep -A1 "iPhone" | grep -Eo "[A-F0-9-]{36}" | head -n 1 \
-)
+PROJECT_FILE   := TemplateApp.xcodeproj
+APP_BUNDLE_ID  := com.akitorahayashi.TemplateApp
+# --- PROJECT SPECIFIC PATHS ---
+TEST_DERIVED_DATA_PATH := fastlane/build/test-results/DerivedData
+DEBUG_APP_PATH    := $(TEST_DERIVED_DATA_PATH)/Debug/Build/Products/Debug-iphonesimulator/TemplateApp.app
+RELEASE_APP_PATH  := $(TEST_DERIVED_DATA_PATH)/Release/Build/Products/Release-iphonesimulator/TemplateApp.app
+SWIFTPM_CACHE_PATH := ~/Library/Caches/org.swift.swiftpm
 
+.PHONY: setup
+setup: ## Run all setup tasks
+	bundle install
+	mint bootstrap
+	$(MAKE) gen-proj
 
-# === Derived paths ===
-ARCHIVE_PATH := $(OUTPUT_DIR)/archives/TemplateApp.xcarchive
-UNIT_TEST_RESULTS := $(OUTPUT_DIR)/test-results/unit/TestResults.xcresult
-UI_TEST_RESULTS := $(OUTPUT_DIR)/test-results/ui/TestResults.xcresult
-DERIVED_DATA_PATH := $(OUTPUT_DIR)/test-results/DerivedData
+.PHONY: gen-proj
+gen-proj: ## Generate Xcode project
+	@echo " Generating Xcode project with TEAM_ID: $(TEAM_ID)"
+	@TEAM_ID=$(TEAM_ID) envsubst < project.envsubst.yml > project.yml
+	mint run xcodegen generate
 
-# === Local Simulator ===
-# .envファイルが存在すれば読み込む
-ifneq (,$(wildcard ./.env))
-	include .env
-endif
+.PHONY: resolve-pkg
+resolve-pkg: ## Reset SwiftPM cache, dependencies, and build
+	@echo " Removing SwiftPM build and cache..."
+	rm -rf .build
+	rm -rf $(SWIFTPM_CACHE_PATH)
+	@echo "✅ SwiftPM build and cache removed."
+	@echo " Resolving Swift package dependencies..."
+	xcodebuild -resolvePackageDependencies -project $(PROJECT_FILE)
+	@echo "✅ Package dependencies resolved."
 
-# === App Bundle Identifier ===
-APP_BUNDLE_ID := com.example.templateapp
+.PHONY: open
+open: ## Open project in Xcode
+	@xed $(PROJECT_FILE)
 
-# === Boot simulator ===
+# --- LOCAL SIMULATOR ---
 .PHONY: boot
-boot:
+boot: ## Boot local simulator
 ifndef LOCAL_SIMULATOR_UDID
 	$(error LOCAL_SIMULATOR_UDID is not set. Please set it in your .env)
 endif
-	@echo "🚀 Booting local simulator: $(LOCAL_SIMULATOR_NAME) (OS: $(LOCAL_SIMULATOR_OS), UDID: $(LOCAL_SIMULATOR_UDID))"
+	@echo " Booting local simulator: UDID: $(LOCAL_SIMULATOR_UDID)"
 	@if xcrun simctl list devices | grep -q "$(LOCAL_SIMULATOR_UDID) (Booted)"; then \
 		echo "⚡️ Simulator is already booted."; \
 	else \
@@ -69,262 +57,85 @@ endif
 		echo "✅ Simulator booted."; \
 	fi
 	open -a Simulator
-	@echo "✅ Local simulator boot command executed."
 
-# === Run debug build ===
 .PHONY: run-debug
-run-debug:
-	make boot
-	@echo "Using Local Simulator: $(LOCAL_SIMULATOR_NAME) (OS: $(LOCAL_SIMULATOR_OS), UDID: $(LOCAL_SIMULATOR_UDID))"
-	@echo "🧹 Cleaning previous outputs..."
-	@rm -rf $(OUTPUT_DIR)
-	@mkdir -p $(OUTPUT_DIR)/debug
-	@echo "✅ Previous outputs cleaned."
-	@echo "🔨 Building debug..."
-	@set -o pipefail && xcodebuild build \
-		-project $(PROJECT_FILE) \
-		-scheme $(APP_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(LOCAL_SIMULATOR_UDID)" \
-		-derivedDataPath $(OUTPUT_DIR)/debug/DerivedData \
-		-configuration Debug \
-		-skipMacroValidation \
-		CODE_SIGNING_ALLOWED=NO \
-		| xcbeautify
-	@echo "✅ Debug build completed."
-	@echo "📲 Installing debug build to simulator ($(LOCAL_SIMULATOR_NAME))..."
-	xcrun simctl install $(LOCAL_SIMULATOR_UDID) $(OUTPUT_DIR)/debug/DerivedData/Build/Products/Debug-iphonesimulator/TemplateApp.app
-	@echo "✅ Installed debug build."
-	@echo "🚀 Launching app ($(APP_BUNDLE_ID)) on simulator ($(LOCAL_SIMULATOR_NAME))..."
+run-debug: ## Build debug, install and launch on local simulator
+	$(MAKE) boot
+	@bundle exec fastlane build_for_testing
+	xcrun simctl install $(LOCAL_SIMULATOR_UDID) $(DEBUG_APP_PATH)
 	xcrun simctl launch $(LOCAL_SIMULATOR_UDID) $(APP_BUNDLE_ID)
-	@echo "✅ App launched."
 
-# === Run release build ===
 .PHONY: run-release
-run-release:
-	make boot
-	@echo "Using Local Simulator: $(LOCAL_SIMULATOR_NAME) (OS: $(LOCAL_SIMULATOR_OS), UDID: $(LOCAL_SIMULATOR_UDID))"
-	@echo "🧹 Cleaning previous outputs..."
-	@rm -rf $(OUTPUT_DIR)
-	@mkdir -p $(OUTPUT_DIR)/release
-	@echo "✅ Previous outputs cleaned."
-	@echo "🔨 Building release..."
-	@set -o pipefail && xcodebuild build \
-		-project $(PROJECT_FILE) \
-		-scheme $(APP_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(LOCAL_SIMULATOR_UDID)" \
-		-derivedDataPath $(OUTPUT_DIR)/release/DerivedData \
-		-configuration Release \
-		-skipMacroValidation \
-		CODE_SIGNING_ALLOWED=NO \
-		| xcbeautify
-	@echo "✅ Release build completed."
-	@echo "📲 Installing release build to simulator ($(LOCAL_SIMULATOR_NAME))..."
-	xcrun simctl install $(LOCAL_SIMULATOR_UDID) $(OUTPUT_DIR)/release/DerivedData/Build/Products/Release-iphonesimulator/TemplateApp.app
-	@echo "✅ Installed release build."
-	@echo "🚀 Launching app ($(APP_BUNDLE_ID)) on simulator ($(LOCAL_SIMULATOR_NAME))..."
+run-release: ## Build release, install and launch on local simulator
+	$(MAKE) boot
+	@bundle exec fastlane build_for_testing configuration:Release
+	xcrun simctl install $(LOCAL_SIMULATOR_UDID) $(RELEASE_APP_PATH)
 	xcrun simctl launch $(LOCAL_SIMULATOR_UDID) $(APP_BUNDLE_ID)
-	@echo "✅ App launched."
 
-# === Clean project ===
-.PHONY: clean
-clean:
-	@echo "🧹 Cleaning Xcode project build folder..."
-	xcodebuild clean \
-		-project $(PROJECT_FILE) \
-		-scheme $(APP_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(LOCAL_SIMULATOR_UDID)"
-	@echo "✅ Project build folder cleaned."
+# --- BUILD & SIGN ---
+.PHONY: build-debug
+build-debug: ## Build Debug archive (unsigned)
+	bundle exec fastlane build_debug
 
-# === Resolve & Reset SwiftPM/Xcode Packages ===
-.PHONY: resolve-pkg
-resolve-pkg:
-	@echo "🧹 Removing SwiftPM build and cache..."
-	rm -rf .build
-	rm -rf ~/Library/Caches/org.swift.swiftpm
-	@echo "✅ SwiftPM build and cache removed."
-	@echo "🔄 Resolving Swift package dependencies..."
-	xcodebuild -resolvePackageDependencies -project $(PROJECT_FILE)
-	@echo "✅ Package dependencies resolved."
+.PHONY: build-release
+build-release: ## Build Release archive (unsigned)
+	bundle exec fastlane build_release
 
-# === Open project in Xcode ===
-.PHONY: open
-open:
-	@echo "📖 Opening $(PROJECT_FILE) in Xcode..."
-	@open $(PROJECT_FILE)
-	@echo "✅ Project opened."
+.PHONY: sign-debug-development
+sign-debug-development: ## Sign debug archive for development
+	bundle exec fastlane sign_debug_development
 
-# === Build for testing ===
-.PHONY: build-test
-build-test:
-ifeq ($(SIMULATOR_UDID),)
-	$(eval SIMULATOR_ID := $(call select-simulator,$(APP_SCHEME)))
-else
-	$(eval SIMULATOR_ID := $(SIMULATOR_UDID))
-endif
-	@echo "Using Simulator UDID: $(SIMULATOR_ID)"
-	@echo "🧹 Cleaning previous outputs..."
-	@rm -rf $(OUTPUT_DIR)
-	@mkdir -p $(OUTPUT_DIR)/test-results/unit $(OUTPUT_DIR)/test-results/ui $(OUTPUT_DIR)/archives
-	@echo "✅ Previous outputs cleaned."
-	@echo "🔨 Building for testing..."
-	@set -o pipefail && xcodebuild build-for-testing \
-		-project $(PROJECT_FILE) \
-		-scheme $(APP_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(SIMULATOR_ID)" \
-		-derivedDataPath $(DERIVED_DATA_PATH) \
-		-configuration Debug \
-		-skipMacroValidation \
-		CODE_SIGNING_ALLOWED=NO \
-		| xcbeautify
-	@echo "✅ Build for testing completed."
+.PHONY: sign-release-development
+sign-release-development: ## Sign release archive for development
+	bundle exec fastlane sign_release export_method:development
 
-# === Archive ===
-.PHONY: archive
-archive:
-	@echo "🧹 Cleaning previous outputs..."
-	@rm -rf $(OUTPUT_DIR)
-	@mkdir -p $(OUTPUT_DIR)/archives
-	@echo "✅ Previous outputs cleaned."
-	@echo "📦 Building archive..."
-	@set -o pipefail && xcodebuild \
-		-project $(PROJECT_FILE) \
-		-scheme $(APP_SCHEME) \
-		-configuration Release \
-		-destination "generic/platform=iOS Simulator" \
-		-archivePath $(ARCHIVE_PATH) \
-		-derivedDataPath $(OUTPUT_DIR)/archives/DerivedData \
-		-skipMacroValidation \
-		CODE_SIGNING_ALLOWED=NO \
-		archive \
-		| xcbeautify
-	@echo "🔍 Verifying archive contents..."
-	@ARCHIVE_APP_PATH="$(ARCHIVE_PATH)/Products/Applications/$(APP_SCHEME).app"; \
-	if [ ! -d "$$ARCHIVE_APP_PATH" ]; then \
-		echo "❌ Error: '$(APP_SCHEME).app' not found in expected archive location ($$ARCHIVE_APP_PATH)"; \
-		echo "Archive directory: $(ARCHIVE_PATH)"; \
-		exit 1; \
-	fi
-	@echo "✅ Archive build completed and verified."
+.PHONY: sign-release-app-store
+sign-release-app-store: ## Sign release archive for app_store
+	bundle exec fastlane sign_release export_method:app_store
 
-# === Unit tests ===
+.PHONY: sign-release-ad-hoc
+sign-release-ad-hoc: ## Sign release archive for ad_hoc
+	bundle exec fastlane sign_release export_method:ad_hoc
+
+.PHONY: sign-release-enterprise
+sign-release-enterprise: ## Sign release archive for enterprise
+	bundle exec fastlane sign_release export_method:enterprise
+
+# --- TESTING ---
+.PHONY: build-for-testing
+build-for-testing: ## Build for testing
+	bundle exec fastlane build_for_testing
+
 .PHONY: unit-test
-unit-test:
-	$(eval SIMULATOR_RAW := $(call select-simulator,$(UNIT_TEST_SCHEME)))
-	@echo "Using Simulator UDID: $(SIMULATOR_RAW)"
-	@echo "🧪 Running Unit Tests..."
-	@rm -rf $(UNIT_TEST_RESULTS)
-	@set -o pipefail && xcodebuild test \
-		-project $(PROJECT_FILE) \
-		-scheme $(UNIT_TEST_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(word 1,$(subst |, ,$(SIMULATOR_RAW)))" \
-		-derivedDataPath $(DERIVED_DATA_PATH) \
-		-enableCodeCoverage NO \
-		-resultBundlePath $(UNIT_TEST_RESULTS) \
-		CODE_SIGNING_ALLOWED=NO \
-		| xcbeautify
-	@if [ ! -d "$(UNIT_TEST_RESULTS)" ]; then \
-		echo "❌ Error: Unit test result bundle not found"; \
-		exit 1; \
-	fi
-	@echo "✅ Unit tests completed. Results: $(UNIT_TEST_RESULTS)"
+unit-test: ## Run unit tests
+	bundle exec fastlane unit_test
 
-# === UI tests ===
-.PHONY: ui-test
-ui-test:
-	$(eval SIMULATOR_RAW := $(call select-simulator,$(UI_TEST_SCHEME)))
-	@echo "Using Simulator UDID: $(SIMULATOR_RAW)"
-	@echo "🧪 Running UI Tests..."
-	@rm -rf $(UI_TEST_RESULTS)
-	@set -o pipefail && xcodebuild test \
-		-project $(PROJECT_FILE) \
-		-scheme $(UI_TEST_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(word 1,$(subst |, ,$(SIMULATOR_RAW)))" \
-		-derivedDataPath $(DERIVED_DATA_PATH) \
-		-enableCodeCoverage NO \
-		-resultBundlePath $(UI_TEST_RESULTS) \
-		CODE_SIGNING_ALLOWED=NO \
-		| xcbeautify
-	@if [ ! -d "$(UI_TEST_RESULTS)" ]; then \
-		echo "❌ Error: UI test result bundle not found"; \
-		exit 1; \
-	fi
-	@echo "✅ UI tests completed. Results: $(UI_TEST_RESULTS)"
-
-# === Unit tests without building ===
 .PHONY: unit-test-without-building
-unit-test-without-building: find-test-artifacts
-	$(eval SIMULATOR_RAW := $(call select-simulator,$(UNIT_TEST_SCHEME)))
-	@echo "Using Simulator UDID: $(SIMULATOR_RAW)"
-	@echo "🧪 Running Unit Tests..."
-	@rm -rf $(UNIT_TEST_RESULTS)
-	@set -o pipefail && xcodebuild test-without-building \
-		-project $(PROJECT_FILE) \
-		-scheme $(UNIT_TEST_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(word 1,$(subst |, ,$(SIMULATOR_RAW)))" \
-		-derivedDataPath $(DERIVED_DATA_PATH) \
-		-enableCodeCoverage NO \
-		-resultBundlePath $(UNIT_TEST_RESULTS) \
-		CODE_SIGNING_ALLOWED=NO \
-		| xcbeautify
-	@if [ ! -d "$(UNIT_TEST_RESULTS)" ]; then \
-		echo "❌ Error: Unit test result bundle not found"; \
-		exit 1; \
-	fi
-	@echo "✅ Unit tests completed. Results: $(UNIT_TEST_RESULTS)"
+unit-test-without-building: ## Run unit tests without building
+	bundle exec fastlane unit_test_without_building
 
-# === UI tests without building ===
+.PHONY: ui-test
+ui-test: ## Run UI tests
+	bundle exec fastlane ui_test
+
 .PHONY: ui-test-without-building
-ui-test-without-building:
-	$(eval SIMULATOR_RAW := $(call select-simulator,$(UI_TEST_SCHEME)))
-	@echo "Using Simulator UDID: $(SIMULATOR_RAW)"
-	@echo "🧪 Running UI Tests..."
-	@rm -rf $(UI_TEST_RESULTS)
-	@set -o pipefail && xcodebuild test-without-building \
-		-project $(PROJECT_FILE) \
-		-scheme $(UI_TEST_SCHEME) \
-		-destination "platform=iOS Simulator,id=$(word 1,$(subst |, ,$(SIMULATOR_RAW)))" \
-		-derivedDataPath $(DERIVED_DATA_PATH) \
-		-enableCodeCoverage NO \
-		-resultBundlePath $(UI_TEST_RESULTS) \
-		CODE_SIGNING_ALLOWED=NO \
-		| xcbeautify
-	@if [ ! -d "$(UI_TEST_RESULTS)" ]; then \
-		echo "❌ Error: UI test result bundle not found"; \
-		exit 1; \
-	fi
-	@echo "✅ UI tests completed. Results: $(UI_TEST_RESULTS)"
+ui-test-without-building: ## Run UI tests without building
+	bundle exec fastlane ui_test_without_building
 
-# === All tests ===
 .PHONY: test-all
-test-all: build-test unit-test-without-building ui-test-without-building
-	@echo "✅ All tests completed."
+test-all: ## Run all tests (unit, UI, package)
+	bundle exec fastlane test_all
 
-# === Find existing artifacts ===
-.PHONY: find-test-artifacts
-find-test-artifacts:
-	@echo "🔍 Finding existing build artifacts..."
-	@if find "$(OUTPUT_DIR)/test-results/DerivedData" -name "TemplateApp.app" -type d -print -quit | grep -q .; then \
-		echo "✅ Found existing build artifacts at: $(OUTPUT_DIR)/test-results/DerivedData"; \
-	else \
-		echo "❌ Error: No existing build artifacts found. Please run 'make build-test' first."; \
-		exit 1; \
-	fi
 
-# === Code Style ===
+# --- LINT & FORMAT ---
 .PHONY: format
-format:
-	@echo "🎨 Running swiftformat (mint)..."
+format: ## Format code
 	mint run swiftformat .
-	@echo "✅ Code formatted."
 
 .PHONY: format-check
-format-check:
-	@echo "🔍 Checking code format with swiftformat (mint)..."
+format-check: ## Check code format
 	mint run swiftformat --lint .
-	@echo "✅ Format check completed."
 
 .PHONY: lint
-lint:
-	@echo "🔍 Running swiftlint (mint)..."
+lint: ## Lint code
 	mint run swiftlint --strict
-	@echo "✅ Lint completed."

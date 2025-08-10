@@ -4,86 +4,79 @@ SwiftUI ベースの iOS アプリテンプレートです
 
 ## カスタマイズの手順
 
-このテンプレートを新しいプロジェクトで使用する際は、まず最初にルート直下にある `TemplateApp` ディレクトリの名前を、あなたのプロジェクト名に変更してください（例: `MyApp`）。そして、`TemplateApp/TemplateApp.swift` のファイル名も、プロジェクト名に合わせて変更してください（例: `MyApp/MyApp.swift`）。同様に `TemplateAppTests` や `TemplateAppUITests` ディレクトリも、新しいテストターゲット名に合わせて変更することをおすすめします（例: `MyAppTests`, `MyAppUITests`）。これらの変更は、後述する多くの設定ファイル中のパスの記述に影響します。
+このテンプレートから新しいプロジェクトを開始する際は、以下の手順に従ってプロジェクト固有の値を設定してください。
 
-また、このテンプレートはサンプルとしての設定値が含まれています。新しいプロジェクトに合わせて、必要に応じて以下の項目を調整してください。
+### 1. プロジェクト名とディレクトリの変更
 
-### project.yml
+まず、プロジェクトのルートディレクトリで、テンプレートのプレースホルダー名をあなたの新しいプロジェクト名に変更します。例えば、新しいプロジェクト名が `NewApp` の場合、以下のように変更します。
 
-| 設定項目 | 現在値 | 詳細 |
+1.  `TemplateApp` -> `NewApp`
+2.  `TemplateAppTests` -> `NewAppTests`
+3.  `TemplateAppUITests` -> `NewAppUITests`
+
+### 2. 設定ファイルの更新
+
+次に、各種設定ファイル内の値を、新しいプロジェクト名に合わせて更新します。
+
+#### project.yml
+
+Xcodeプロジェクト (`.xcodeproj`) の元となるファイルです。
+
+| 設定項目 | 現在の値 | 変更例 (`NewApp`) | 詳細 |
+|---|---|---|---|
+| `name` | `TemplateApp` | `NewApp` | プロジェクト名。ディレクトリ名と一致させます。 |
+| `bundleIdPrefix` | `com.akitorahayashi` | `com.yourcompany` | あなたのバンドルIDプレフィックスに変更します。 |
+| `targets.TemplateApp.sources` | `[TemplateApp]` | `[NewApp]` | アプリ本体のソースディレクトリ名を指定します。 |
+| `targets.TemplateAppTests.sources` | `[TemplateAppTests]` | `[NewAppTests]` | Unitテストのソースディレクトリ名を指定します。 |
+| `targets.TemplateAppUITests.sources` | `[TemplateAppUITests]` | `[NewAppUITests]` | UIテストのソースディレクトリ名を指定します。 |
+| `schemes` | `TemplateApp`, `TemplateAppTests` ... | `NewApp`, `NewAppTests` ... | スキーム名を新しいプロジェクト名に合わせて変更します。 |
+
+**注意:** `project.yml` を変更した後は、必ず `make gen-proj` を実行して `.xcodeproj` ファイルを再生成してください。
+
+#### Info.plist ファイル
+
+各ターゲットの`Info.plist`ファイル内に含まれるバンドルID (`CFBundleIdentifier`) を、`project.yml`で設定した値と一致させる必要があります。
+
+| ファイル | 更新が必要なキー | 変更後の値の例 (`NewApp`) |
 |---|---|---|
-| `name` | `TemplateApp` | プロジェクト名に変更 |
-| `bundleIdPrefix` | `com.example` | プロジェクトのバンドルIDプレフィックスに変更 |
-| `MARKETING_VERSION` | `1.0.0` | アプリのマーケティングバージョン |
-| `CURRENT_PROJECT_VERSION` | `1` | アプリのビルド番号 |
-| `IPHONEOS_DEPLOYMENT_TARGET` | `15.0` | iOSのデプロイメントターゲット |
-| `SWIFT_VERSION` | `5.9` | 使用するSwiftのバージョン |
-| `targets.TemplateApp.settings.PRODUCT_NAME` | `$(TARGET_NAME)` | プロダクト名。通常はターゲット名と同じ |
-| `targets.TemplateApp.settings.PRODUCT_DISPLAY_NAME` | `$(TARGET_NAME)` | アプリの表示名。通常はターゲット名と同じ |
-| `targets.TemplateApp.sources` | `[TemplateApp]` | アプリ本体のソースディレクトリ。ディレクトリ名変更に合わせて修正 |
-| `targets.TemplateApp.settings.INFOPLIST_FILE` | `TemplateApp/Info.plist` | アプリ本体のInfo.plistパス。ディレクトリ名変更に合わせて修正 |
-| `targets.TemplateAppTests.settings.PRODUCT_NAME` | `$(TARGET_NAME)` | プロダクト名。通常はターゲット名と同じ |
-| `targets.TemplateAppTests.settings.PRODUCT_DISPLAY_NAME` | `$(TARGET_NAME)` | アプリの表示名。通常はターゲット名と同じ |
-| `targets.TemplateAppTests.sources` | `[TemplateAppTests]` | Unitテストのソースディレクトリ。ディレクトリ名変更に合わせて修正 |
-| `targets.TemplateAppTests.settings.INFOPLIST_FILE` | `TemplateAppTests/Info.plist` | UnitテストのInfo.plistパス。ディレクトリ名変更に合わせて修正 |
-| `targets.TemplateAppUITests.settings.PRODUCT_NAME` | `$(TARGET_NAME)` | プロダクト名。通常はターゲット名と同じ |
-| `targets.TemplateAppUITests.settings.PRODUCT_DISPLAY_NAME` | `$(TARGET_NAME)` | アプリの表示名。通常はターゲット名と同じ |
-| `targets.TemplateAppUITests.sources` | `[TemplateAppUITests]` | UIテストのソースディレクトリ。ディレクトリ名変更に合わせて修正 |
-| `targets.TemplateAppUITests.settings.INFOPLIST_FILE` | `TemplateAppUITests/Info.plist` | UIテストのInfo.plistパス。ディレクトリ名変更に合わせて修正 |
-| `schemes.TemplateApp.build.targets.TemplateApp` | `all` | アプリ本体のスキーム設定。プロジェクト名に合わせてスキーム名やターゲット名を修正 |
-| `schemes.TemplateAppTests.build.targets.TemplateAppTests` | `all` | Unitテストのスキーム設定。プロジェクト名に合わせてスキーム名やターゲット名を修正 |
-| `schemes.TemplateAppUITests.build.targets.TemplateAppUITests` | `all` | UIテストのスキーム設定。プロジェクト名に合わせてスキーム名やターゲット名を修正 |
+| `TemplateApp/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewApp` |
+| `TemplateAppTests/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewAppTests` |
+| `TemplateAppUITests/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewAppUITests` |
 
-**注意:**
-- ディレクトリ名変更後、`sources` や `INFOPLIST_FILE` のパスが正しく更新されていることを確認してください。
+#### Makefile
 
-### 各 Info.plist の設定
+開発用のコマンドを定義したファイルです。
 
-`project.yml` の設定に基づき、ほとんどの値はXcodeGenによって自動的に設定されますが、`CFBundleIdentifier`（バンドルID）のみ手動で設定する必要があります。これは、`Makefile` 内の一部のスクリプトが `Info.plist` から直接バンドルIDを読み取る必要があるためです。
+| 変数名 | 現在の値 | 変更例 (`NewApp`) | 詳細 |
+|---|---|---|---|
+| `PROJECT_FILE` | `TemplateApp.xcodeproj` | `NewApp.xcodeproj` | `project.yml` の `name` に `.xcodeproj` を付けた値に更新します。 |
+| `APP_BUNDLE_ID` | `com.akitorahayashi.TemplateApp` | `com.yourcompany.NewApp` | `project.yml` の `bundleIdPrefix` と `name` を組み合わせた値に更新します。 |
+| `DEBUG_APP_PATH` | `.../Products/Debug-iphonesimulator/TemplateApp.app` | `.../Products/Debug-iphonesimulator/NewApp.app` | パスに含まれるアプリ名を更新します。 |
+| `RELEASE_APP_PATH` | `.../Products/Release-iphonesimulator/TemplateApp.app` | `.../Products/Release-iphonesimulator/NewApp.app` | パスに含まれるアプリ名を更新します。 |
 
-プロジェクトをカスタマイズする際は、以下のファイルの `CFBundleIdentifier` を、あなたのプロジェクトのバンドルIDに合わせて手動で修正してください。
+#### fastlane/config.rb
 
-- `TemplateApp/Info.plist`
-- `TemplateAppTests/Info.plist`
-- `TemplateAppUITests/Info.plist`
+`fastlane` の設定ファイルです。ビルドやテストの具体的な挙動を定義します。
 
-### Makefile
+| 定数名 | 現在の値 | 変更例 (`NewApp`) | 詳細 |
+|---|---|---|---|
+| `PROJECT_PATH` | `"TemplateApp.xcodeproj"` | `"NewApp.xcodeproj"` | プロジェクトファイル名を更新します。 |
+| `SCHEMES[:app]` | `"TemplateApp"` | `"NewApp"` | アプリ本体のスキーム名を更新します。 |
+| `SCHEMES[:unit_test]` | `"TemplateAppTests"` | `"NewAppTests"` | Unitテストのスキーム名を更新します。 |
+| `SCHEMES[:ui_test]` | `"TemplateAppUITests"` | `"NewAppUITests"` | UIテストのスキーム名を更新します。 |
+| `DEBUG_ARCHIVE_PATH` | `.../archive/TemplateApp.xcarchive` | `.../archive/NewApp.xcarchive` | アーカイブパスに含まれるアプリ名を更新します。 |
+| `RELEASE_ARCHIVE_PATH` | `.../archive/TemplateApp.xcarchive` | `.../archive/NewApp.xcarchive` | アーカイブパスに含まれるアプリ名を更新します。 |
 
-| 設定項目 | 現在値 | 詳細 |
-|---|---|---|
-| `PROJECT_FILE` | `TemplateApp.xcodeproj` | プロジェクトファイル名。通常 `project.yml` の `name` と連動してXcodeGenが生成 |
-| `APP_SCHEME` | `TemplateApp` | アプリ本体のスキーム名。`project.yml` の `name` と連動させることを推奨 |
-| `UNIT_TEST_SCHEME` | `TemplateAppTests` | Unitテストのスキーム名。同様にプロジェクト名に合わせて変更 |
-| `UI_TEST_SCHEME` | `TemplateAppUITests` | UIテストのスキーム名。同様にプロジェクト名に合わせて変更 |
-| `ARCHIVE_PATH` | `$(OUTPUT_DIR)/archives/TemplateApp.xcarchive` | アーカイブ出力パス。`APP_SCHEME` と連動して変更 |
-| `LOCAL_SIMULATOR_NAME` | `iPhone 16 Pro` | ローカル実行時のシミュレータ名 |
-| `LOCAL_SIMULATOR_OS` | `26.0` | ローカル実行時のシミュレータOSバージョン |
-| `LOCAL_SIMULATOR_UDID` | `5495CFE4-9EBC-45C5-8F85-37E0E143B3CC` | ローカル実行時のシミュレータUDID |
-| `APP_BUNDLE_ID` | `com.example.TemplateApp` | アプリのバンドルID。`project.yml` と一致させる |
+#### .swiftlint.yml
 
-**注意:**
-- `find-test-artifacts` ターゲット内の `TemplateApp.app` という記述も、新しいアプリ名 (`$(APP_SCHEME).app`) に合わせて確認・修正が必要な場合があります。
+SwiftLintの設定ファイルです。
 
-### .swiftlint.yml
+| 設定項目 | 現在の値 | 変更例 (`NewApp`) | 詳細 |
+|---|---|---|---|
+| `included` | `- TemplateApp` | `- NewApp` | リンティング対象のディレクトリ名を更新します。 |
+| | `- TemplateAppTests` | `- NewAppTests` | |
+| | `- TemplateAppUITests` | `- NewAppUITests` | |
 
-| 設定項目 | 現在値 | 詳細 |
-|---|---|---|
-| `included` | `TemplateApp/**/*.swift` | リンティング対象ディレクトリ。プロジェクトのメインソースディレクトリ名に変更 |
-| | `TemplateAppTests/**/*.swift` | リンティング対象ディレクトリ。Unitテストのソースディレクトリ名に変更 |
-| | `TemplateAppUITests/**/*.swift` | リンティング対象ディレクトリ。UIテストのソースディレクトリ名に変更 |
-
-**注意:**
-- ディレクトリ名を変更した場合、上記の `included` のパスを新しいディレクトリ構成に合わせて修正してください。
-- `excluded` セクションもプロジェクトの構成によって調整が必要な場合があります。
-
-### .swiftformat
-
-| 設定項目 | 現在値 | 詳細 |
-|---|---|---|
-| `--swiftversion` | `5.9` | 使用するSwiftのバージョン。`project.yml` の `SWIFT_VERSION` と一致させることを推奨 |
-
-**注意:**
-- `--exclude` で指定されている除外パスも、プロジェクトのディレクトリ構造に合わせて確認・調整してください。
 
 ### .github/workflows/ci-cd-pipeline.yml
 

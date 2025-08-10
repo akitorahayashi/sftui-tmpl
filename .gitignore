@@ -21,6 +21,10 @@ build/
 Package.resolved
 .swiftpm/
 
+# Fastlane files
+fastlane/README.md
+fastlane/report.xml
+
 # macOSシステムファイル
 .DS_Store
 .AppleDouble
@@ -33,3 +37,4 @@ Package.resolved
 *.cer
 *.mobileprovision
 /.cursor/
+project.yml
