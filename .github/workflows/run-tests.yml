@@ -126,9 +126,6 @@ jobs:
       - name: Generate Xcode Project
         run: make gen-proj
 
-      - name: Generate Xcode Project
-        run: make gen-proj
-
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:

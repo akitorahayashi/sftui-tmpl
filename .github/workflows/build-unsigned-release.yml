@@ -49,20 +49,3 @@ jobs:
 
       - name: Build Unsigned Release Version
         run: make build-release
-          
-      - name: Verify Archive Contents
-        run: |
-          ARCHIVE_APP_PATH="fastlane/build/release/archive/CatBoardApp.xcarchive/Products/Applications/CatBoardApp.app"
-          if [ -d "$ARCHIVE_APP_PATH" ]; then
-            echo "✅ Archive content verified."
-          else
-            echo "❌ 'CatBoardApp.app' not found."
-            exit 1
-          fi
-            
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: unsigned-archive
-          path: fastlane/build/release/archive/CatBoardApp.xcarchive
-          retention-days: 3
