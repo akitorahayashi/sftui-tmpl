@@ -2,7 +2,7 @@
 
 name: TemplateApp
 options:
-  bundleIdPrefix: com.example
+  bundleIdPrefix: com.akitorahayashi
   createIntermediateGroups: true
   defaultConfig: Debug
   
