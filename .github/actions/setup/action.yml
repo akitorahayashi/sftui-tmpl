@@ -15,11 +15,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
     - name: Setup Xcode
       if: inputs.setup_xcode == 'true'
       uses: maxim-lobanov/setup-xcode@v1

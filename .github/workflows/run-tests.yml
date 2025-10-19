@@ -9,6 +9,10 @@ jobs:
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup environment
         uses: ./.github/actions/setup
         with:
@@ -33,6 +37,10 @@ jobs:
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup environment
         uses: ./.github/actions/setup
         with:
@@ -64,6 +72,10 @@ jobs:
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup environment
         uses: ./.github/actions/setup
         with:
