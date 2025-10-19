@@ -1,0 +1,20 @@
+name: Run Linters
+
+on:
+  workflow_call:
+
+jobs:
+  run-linters:
+    runs-on: macos-14
+    env:
+      MINT_PATH: ${{ github.workspace }}/.mint
+    steps:
+    - name: Setup environment
+      uses: ./.github/actions/setup
+      with:
+        setup_xcode: false
+        generate_project: false
+        setup_ruby: false
+
+    - name: Run Linters
+      run: just lint

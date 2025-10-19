@@ -8,17 +8,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  # コード品質チェック
-  code-quality:
-    name: Code Quality Check
-    uses: ./.github/workflows/code-quality.yml
+  run-linters:
+    name: Run Linters
+    uses: ./.github/workflows/run-linters.yml
     
-  # ビルドとテスト
   build-and-test:
     name: Run Tests
     uses: ./.github/workflows/run-tests.yml
     
-  # リリースビルド
   release-build:
     name: Build Unsigned Release
     uses: ./.github/workflows/build-unsigned-release.yml
