@@ -1,17 +1,17 @@
 xcuserdata/
 *.xcodeproj/
 
-## ビルド関連
+## Build related
 DerivedData/
 *.moved-aside
 *.pbxuser
 !default.pbxuser
 build/
 
-## Objective-C/Swift固有のファイル
+## Objective-C/Swift specific files
 *.hmap
 
-## パッケージング
+## Packaging
 *.ipa
 *.dSYM.zip
 *.dSYM
@@ -25,12 +25,12 @@ Package.resolved
 fastlane/README.md
 fastlane/report.xml
 
-# macOSシステムファイル
+# macOS system files
 .DS_Store
 .AppleDouble
 .LSOverride
 
-# 環境変数とシークレット
+# Environment variables and secrets
 *.env
 *.pem
 *.p12
@@ -38,3 +38,5 @@ fastlane/report.xml
 *.mobileprovision
 /.cursor/
 project.yml
+
+.tmp/
