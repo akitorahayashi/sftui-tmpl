@@ -151,7 +151,7 @@ ui-test-without-building:
     @bundle exec fastlane ui_test_without_building
 
 # Run all tests (unit, UI, package)
-test-all:
+test:
     @bundle exec fastlane test_all
 
 # ==============================================================================
