@@ -164,6 +164,6 @@ format:
     @mint run swiftlint lint --fix .
 
 # Check code format
-format-check:
+lint:
     @mint run swiftformat --lint .
     @mint run swiftlint lint --strict
