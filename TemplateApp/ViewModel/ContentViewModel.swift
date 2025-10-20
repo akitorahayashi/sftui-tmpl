@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 
 @MainActor
@@ -12,8 +13,12 @@ final class ContentViewModel: ObservableObject {
     }
 
     func onAppear() async {
-        isLoading = true
-        count = await logic.fetchCurrentCount()
-        isLoading = false
+        self.isLoading = true
+        defer { isLoading = false }
+        do {
+            self.count = try await self.logic.fetchCurrentCount()
+        } catch {
+            print("Failed to fetch count: \(error)")
+        }
     }
 }

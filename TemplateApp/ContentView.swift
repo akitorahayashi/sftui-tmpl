@@ -9,15 +9,15 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            if viewModel.isLoading {
+            if self.viewModel.isLoading {
                 ProgressView()
             } else {
-                Text("Count: \(viewModel.count)")
+                Text("Count: \(self.viewModel.count)")
                     .font(.largeTitle)
             }
         }
         .task {
-            await viewModel.onAppear()
+            await self.viewModel.onAppear()
         }
     }
 }

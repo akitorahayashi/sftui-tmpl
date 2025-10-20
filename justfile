@@ -36,6 +36,12 @@ help:
 setup:
     @echo "Installing Ruby gems..."
     @bundle install
+    @if [ ! -f .env ]; then \
+        cp .env.example .env && \
+        echo "📝 Created .env file from .env.example."; \
+    else \
+        echo "📝 .env file already exists."; \
+    fi
     @echo "Bootstrapping Mint packages..."
     @mint bootstrap
     @echo "Generating Xcode project..."
@@ -80,6 +86,10 @@ boot:
     fi
     @open -a Simulator
 
+# List available simulators
+siml:
+    @xcrun simctl list devices available
+    
 # Build debug, install, and launch on local simulator
 run-debug:
     @just boot
