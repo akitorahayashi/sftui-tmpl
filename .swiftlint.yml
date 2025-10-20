@@ -13,6 +13,7 @@ included:
   - TemplateApp/**/*.swift
   - TemplateAppTests/**/*.swift
   - TemplateAppUITests/**/*.swift
+  - TemplateAppIntgTests/**/*.swift
 
 #-------------------------------------------------------------------
 # Analysis Targets

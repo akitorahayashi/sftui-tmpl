@@ -36,6 +36,12 @@ help:
 setup:
     @echo "Installing Ruby gems..."
     @bundle install
+    @if [ ! -f .env ]; then \
+        cp .env.example .env && \
+        echo "📝 Created .env file from .env.example."; \
+    else \
+        echo "📝 .env file already exists."; \
+    fi
     @echo "Bootstrapping Mint packages..."
     @mint bootstrap
     @echo "Generating Xcode project..."
@@ -80,6 +86,10 @@ boot:
     fi
     @open -a Simulator
 
+# List available simulators
+siml:
+    @xcrun simctl list devices available
+    
 # Build debug, install, and launch on local simulator
 run-debug:
     @just boot
@@ -142,6 +152,14 @@ unit-test:
 unit-test-without-building:
     @bundle exec fastlane unit_test_without_building
 
+# Run integration tests
+intg-test:
+    @bundle exec fastlane intg_test
+
+# Run integration tests without building
+intg-test-without-building:
+    @bundle exec fastlane intg_test_without_building
+
 # Run UI tests
 ui-test:
     @bundle exec fastlane ui_test
@@ -150,7 +168,7 @@ ui-test:
 ui-test-without-building:
     @bundle exec fastlane ui_test_without_building
 
-# Run all tests (unit, UI, package)
+# Run all tests (unit, integration, UI)
 test:
     @bundle exec fastlane test_all
 
