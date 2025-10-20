@@ -9,7 +9,8 @@ PROJECT_PATH = "TemplateApp.xcodeproj"
 SCHEMES = {
   app: "TemplateApp",
   unit_test: "TemplateAppTests",
-  ui_test: "TemplateAppUITests"
+  ui_test: "TemplateAppUITests",
+  intg_test: "TemplateAppIntgTests"
 }.freeze
 
 # === Test Paths ===
@@ -18,6 +19,7 @@ TEST_RESULTS_PATH = "#{BUILD_PATH}/test-results"
 TEST_DERIVED_DATA_PATH = "#{BUILD_PATH}/test-results/DerivedData"
 UNIT_TEST_RESULT_PATH = "#{TEST_RESULTS_PATH}/unit/TestResults.xcresult"
 UI_TEST_RESULT_PATH = "#{TEST_RESULTS_PATH}/ui/TestResults.xcresult"
+INTG_TEST_RESULT_PATH = "#{TEST_RESULTS_PATH}/intg/TestResults.xcresult"
 
 # === Archive Paths ===
 DEBUG_EXPORT_BASE = "#{BUILD_PATH}/debug"

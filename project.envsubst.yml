@@ -49,6 +49,19 @@ targets:
       PRODUCT_DISPLAY_NAME: $(TARGET_NAME)
       INFOPLIST_FILE: TemplateAppTests/Info.plist
 
+  TemplateAppIntgTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - TemplateAppIntgTests
+    dependencies:
+      - target: TemplateApp
+    settings:
+      PRODUCT_NAME: $(TARGET_NAME)
+      PRODUCT_DISPLAY_NAME: $(TARGET_NAME)
+      INFOPLIST_FILE: TemplateAppIntgTests/Info.plist
+
   TemplateAppUITests:
     type: bundle.ui-testing
     platform: iOS
@@ -75,6 +88,7 @@ schemes:
       targets:
         - TemplateAppTests
         - TemplateAppUITests
+        - TemplateAppIntgTests
     archive:
       config: Release
 
@@ -87,6 +101,16 @@ schemes:
       gatherCoverageData: false
       targets:
         - TemplateAppTests
+
+  TemplateAppIntgTests:
+    build:
+      targets:
+        TemplateAppIntgTests: all
+    test:
+      config: Debug
+      gatherCoverageData: false
+      targets:
+        - TemplateAppIntgTests
 
   TemplateAppUITests:
     build:
