@@ -5,10 +5,10 @@
 #-------------------------------------------------------------------
 # General Configuration
 #-------------------------------------------------------------------
-# Swiftのバージョン
+# Swift version
 --swiftversion 5.9
 
-# 除外するディレクトリ（ビルド成果物、依存関係など）
+# Directories to exclude (build artifacts, dependencies, etc.)
 --exclude .build
 --exclude DerivedData
 --exclude fastlane
@@ -22,57 +22,57 @@
 #-------------------------------------------------------------------
 # Indentation & Spacing
 #-------------------------------------------------------------------
-# インデント設定
---indent 4                       # インデント幅をスペース4つに設定
---indentcase true               # case文はswitchよりインデントする
---maxwidth 120                   # 行の最大幅は120文字
---trimwhitespace always          # 行頭・行末の空白を削除
---commas always                  # カンマの後にスペースを入れる
---linebreaks lf                  # 改行コードはLF(\n)で統一する（CRLFは使用しない）
+# Indentation settings
+--indent 4                       # Set indent width to 4 spaces
+--indentcase true               # Indent case statements more than switch
+--maxwidth 120                   # Maximum line width is 120 characters
+--trimwhitespace always          # Remove whitespace at the beginning and end of lines
+--commas always                  # Add space after commas
+--linebreaks lf                  # Use LF (\n) for line breaks (do not use CRLF)
 
 #-------------------------------------------------------------------
 # Braces & Structure
 #-------------------------------------------------------------------
-# 括弧のスタイル
---allman false                   # Swift標準の括弧スタイル：開き括弧を条件式と同じ行に配置
-                                 # 例: if (condition) {
-                                 #        処理
+# Brace style
+--allman false                   # Swift standard brace style: place opening brace on the same line as the condition
+                                 # Example: if (condition) {
+                                 #        code
                                  #     }
                                  
---closingparen balanced          # 複数行にわたる関数呼び出しなどで、閉じ括弧の位置を開始位置と同じレベルに揃える
-                                 # 例: someFunction(
+--closingparen balanced          # Align closing parenthesis at the same level as the start position in multi-line function calls, etc.
+                                 # Example: someFunction(
                                  #        parameter1: value1,
                                  #        parameter2: value2
-                                 #     )  // ← 閉じ括弧が呼び出し開始位置と同じインデントレベル
+                                 #     )  // Closing parenthesis at the same indent level as the call start
 
-# セミコロン
---semicolons never               # セミコロンを使用しない
+# Semicolons
+--semicolons never               # Do not use semicolons
 
 #-------------------------------------------------------------------
 # Wrapping & Collections
 #-------------------------------------------------------------------
-# 長い引数リストやコレクションの折り返し
---wraparguments before-first     # 引数リストを折り返す際、最初の引数の前（開き括弧の後）で折り返す
-                                 # 例: someFunction(  // 括弧の後で折り返し
+# Wrapping long argument lists and collections
+--wraparguments before-first     # When wrapping argument lists, wrap before the first argument (after the opening parenthesis)
+                                 # Example: someFunction(  // Wrap after parenthesis
                                  #        arg1: value1,
                                  #        arg2: value2,
                                  #        arg3: value3
                                  #     )
-                                 # 長い引数リストが一目で識別しやすく、関数名と分離されて読みやすい
+                                 # Long argument lists are easily identifiable and separated from the function name for readability
 
---wrapcollections before-first   # 配列や辞書などのコレクションリテラルを折り返す際、最初の要素の前で折り返す
-                                 # 例: let array = [  // 括弧の後で折り返し
+--wrapcollections before-first   # When wrapping collection literals like arrays or dictionaries, wrap before the first element
+                                 # Example: let array = [  // Wrap after bracket
                                  #        item1,
                                  #        item2,
                                  #        item3
                                  #     ]
                                  #
-                                 # 各要素が同じインデントレベルに並び、視覚的に整理されて読みやすい
+                                 # Each element is at the same indent level, visually organized and readable
 #-------------------------------------------------------------------
 # Imports & Modifiers
 #-------------------------------------------------------------------
---importgrouping alphabetical      # import文をアルファベット順に整列
---modifierorder acl                # 修飾子を ACL 順で並べ替え
---self insert                      # self を明示的に挿入
---ranges spaced                    # 範囲演算子の前後にスペースを追加
---wrapconditions before-first      # 複数条件の if/guard などは最初の条件前で改行
+--importgrouping alphabetical      # Sort import statements alphabetically
+--modifierorder acl                # Reorder modifiers in ACL order
+--self insert                      # Explicitly insert self
+--ranges spaced                    # Add spaces around range operators
+--wrapconditions before-first      # Wrap multi-condition if/guard etc. before the first condition
