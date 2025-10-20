@@ -3,8 +3,11 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var viewModel: ContentViewModel
 
-    init(viewModel: ContentViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    // Accept AppDependencies in initializer
+    init(dependencies: AppDependencies) {
+        _viewModel = StateObject(
+            wrappedValue: ContentViewModel(logic: dependencies.countLogic)
+        )
     }
 
     var body: some View {
@@ -23,5 +26,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView(viewModel: ContentViewModel(logic: LiveCountLogic()))
+    // Always use mock dependencies in previews
+    ContentView(dependencies: .mock())
 }
