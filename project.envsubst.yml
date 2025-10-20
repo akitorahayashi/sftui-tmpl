@@ -35,8 +35,9 @@ targets:
       INFOPLIST_FILE: TemplateApp/Info.plist
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
       DEVELOPMENT_ASSET_PATHS: TemplateApp/Resources
-    dependencies:
+    # dependencies:
       # - package: ApiClient
+      #   product: ApiClient
 
   TemplateAppTests:
     type: bundle.unit-test
@@ -127,3 +128,10 @@ schemes:
 # packages:
 #   ApiClient:
 #     path: Packages/ApiClient
+#   # Example: Adding a local package
+#   # MyLocalPackage:
+#   #   path: Packages/MyLocalPackage
+#   # Example: Adding a remote package (with URL)
+#   # Alamofire:
+#   #   url: https://github.com/Alamofire/Alamofire
+#   #   from: 5.0.0

@@ -4,20 +4,15 @@ import XCTest
 @MainActor
 final class FeatureTests: XCTestCase {
     func test_onAppear_countIsUpdated() async {
-        // 1. Prepare mock logic for testing
-        let mockLogic = MockCountLogic()
+        // Arrange
+        let mockLogic = AppDependencies.MockCountLogic()
         mockLogic.countToReturn = 42
+        let viewModel = ContentViewModel(logic: mockLogic)
 
-        // 2. Generate DI container with mock logic
-        let dependencies = AppDependencies.mock(mockCountLogic: mockLogic)
-
-        // 3. Generate ViewModel from DI container
-        let viewModel = ContentViewModel(logic: dependencies.countLogic)
-
-        // 4. Execute test
+        // Act
         await viewModel.onAppear()
 
-        // 5. Verify results
+        // Assert
         XCTAssertEqual(viewModel.count, 42, "Count should be updated correctly")
         XCTAssertFalse(viewModel.isLoading, "Loading should be finished")
     }
