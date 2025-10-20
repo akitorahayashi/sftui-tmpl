@@ -25,7 +25,9 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    // Always use mock dependencies in previews
-    ContentView(dependencies: .mock())
-}
+#if DEBUG
+    #Preview {
+        // Always use mock dependencies in previews
+        ContentView(dependencies: .mock())
+    }
+#endif
