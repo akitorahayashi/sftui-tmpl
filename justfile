@@ -185,3 +185,14 @@ format:
 lint:
     @mint run swiftformat --lint .
     @mint run swiftlint lint --strict
+
+# ==============================================================================
+# CLEANUP
+# ==============================================================================
+
+# Clean build artifacts, caches, and generated files
+clean:
+    @rm -rf {{PROJECT_FILE}}
+    @rm -rf fastlane/build
+    @rm -rf .build
+    @rm -rf {{SWIFTPM_CACHE_PATH}}
