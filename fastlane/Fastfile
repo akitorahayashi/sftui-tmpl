@@ -57,10 +57,11 @@ platform :ios do
     derived_data_path = "#{TEST_DERIVED_DATA_PATH}/#{configuration}"
     
     # Add ENABLE_TESTABILITY for Release builds to allow @testable import
-    xcargs = ""
+    xcargs_items = []
     if configuration == CONFIGURATIONS[:release]
-      xcargs += "ENABLE_TESTABILITY=YES"
+      xcargs_items << "ENABLE_TESTABILITY=YES"
     end
+    xcargs = xcargs_items.join(' ')
     
     get_simulator_info
     udid = Actions.lane_context[:SIMULATOR_UDID]
@@ -220,7 +221,7 @@ platform :ios do
       UI.error("❌ Test failed. Showing last 100 lines from log: #{log_path}")
       
       if log_path && File.exist?(log_path)
-        puts File.read(log_path).lines.last(100).join
+        UI.message(File.read(log_path).lines.last(100).join)
       else
         UI.error("Could not find log file at: #{log_path}")
       end
