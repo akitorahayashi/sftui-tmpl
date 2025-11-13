@@ -57,9 +57,9 @@ platform :ios do
     derived_data_path = "#{TEST_DERIVED_DATA_PATH}/#{configuration}"
     
     # Add ENABLE_TESTABILITY for Release builds to allow @testable import
-    xcargs = "SKIP_MACRO_VALIDATION=YES"
+    xcargs = ""
     if configuration == CONFIGURATIONS[:release]
-      xcargs += " ENABLE_TESTABILITY=YES"
+      xcargs += "ENABLE_TESTABILITY=YES"
     end
     
     get_simulator_info
@@ -77,33 +77,33 @@ platform :ios do
   end
 
   desc "Run unit tests"
-  lane :unit_test do
-    test_with_scheme(scheme: SCHEMES[:unit_test], result_path: UNIT_TEST_RESULT_PATH)
+  lane :unit_test do |options|
+    test_with_scheme(scheme: SCHEMES[:unit_test], result_path: UNIT_TEST_RESULT_PATH, **options)
   end
 
   desc "Run unit tests without building"
-  lane :unit_test_without_building do
-    test_with_scheme(scheme: SCHEMES[:unit_test], result_path: UNIT_TEST_RESULT_PATH, test_without_building: true)
+  lane :unit_test_without_building do |options|
+    test_with_scheme(scheme: SCHEMES[:unit_test], result_path: UNIT_TEST_RESULT_PATH, test_without_building: true, **options)
   end
 
   desc "Run integration tests"
-  lane :intg_test do
-    test_with_scheme(scheme: SCHEMES[:intg_test], result_path: INTG_TEST_RESULT_PATH)
+  lane :intg_test do |options|
+    test_with_scheme(scheme: SCHEMES[:intg_test], result_path: INTG_TEST_RESULT_PATH, **options)
   end
 
   desc "Run integration tests without building"
-  lane :intg_test_without_building do
-    test_with_scheme(scheme: SCHEMES[:intg_test], result_path: INTG_TEST_RESULT_PATH, test_without_building: true)
+  lane :intg_test_without_building do |options|
+    test_with_scheme(scheme: SCHEMES[:intg_test], result_path: INTG_TEST_RESULT_PATH, test_without_building: true, **options)
   end
 
   desc "Run UI tests"
-  lane :ui_test do
-    test_with_scheme(scheme: SCHEMES[:ui_test], result_path: UI_TEST_RESULT_PATH)
+  lane :ui_test do |options|
+    test_with_scheme(scheme: SCHEMES[:ui_test], result_path: UI_TEST_RESULT_PATH, **options)
   end
 
   desc "Run UI tests without building (xcodebuild test-without-building)"
-  lane :ui_test_without_building do
-    test_with_scheme(scheme: SCHEMES[:ui_test], result_path: UI_TEST_RESULT_PATH, test_without_building: true)
+  lane :ui_test_without_building do |options|
+    test_with_scheme(scheme: SCHEMES[:ui_test], result_path: UI_TEST_RESULT_PATH, test_without_building: true, **options)
   end
 
   desc "Run all tests (Unit, UI, Intg)"
@@ -161,7 +161,6 @@ platform :ios do
       clean: true,
       skip_codesigning: true,
       skip_package_ipa: true,
-      xcargs: "SKIP_MACRO_VALIDATION=YES",
       derived_data_path: paths[:derived_data_path],
       archive_path: paths[:archive_path],
       export_team_id: ENV['TEAM_ID']
@@ -197,6 +196,7 @@ platform :ios do
     sh("rm -rf \"#{result_path}\"")
     get_simulator_info
     udid = Actions.lane_context[:SIMULATOR_UDID]
+
     scan_args = {
       project: PROJECT_PATH,
       scheme: options[:scheme],
@@ -204,11 +204,27 @@ platform :ios do
       derived_data_path: "#{TEST_DERIVED_DATA_PATH}/#{CONFIGURATIONS[:debug]}",
       result_bundle_path: result_path,
       code_coverage: false,
-      xcargs: "SKIP_MACRO_VALIDATION=YES",
       output_types: "xcresult",
       clean: false
     }
+
     scan_args[:test_without_building] = options[:test_without_building] if options[:test_without_building]
-    scan(**scan_args)
+
+    begin
+      scan_args[:suppress_xcode_output] = true
+      scan_args[:fail_build] = false
+      scan(**scan_args)
+      UI.success("✅ Test successful (output suppressed)")
+    rescue => ex
+      log_path = lane_context[SharedValues::SCAN_BUILDLOG_PATH]
+      UI.error("❌ Test failed. Showing last 100 lines from log: #{log_path}")
+      
+      if log_path && File.exist?(log_path)
+        puts File.read(log_path).lines.last(100).join
+      else
+        UI.error("Could not find log file at: #{log_path}")
+      end
+      raise ex
+    end
   end
 end
