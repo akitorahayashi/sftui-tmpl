@@ -194,5 +194,7 @@ lint:
 clean:
     @rm -rf {{PROJECT_FILE}}
     @rm -rf fastlane/build
+    @rm -rf fastlane/logs
+    @rm -rf fastlane/report.xml
     @rm -rf .build
     @rm -rf {{SWIFTPM_CACHE_PATH}}

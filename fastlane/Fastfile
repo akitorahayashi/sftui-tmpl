@@ -14,6 +14,12 @@ default_platform(:ios)
 
 require_relative 'config'
 
+before_all do
+  # Set the global log path default to the project-local directory
+  # This becomes the fallback if buildlog_path is not specified
+  ENV["FL_BUILDLOG_PATH"] = LOGS_PATH
+end
+
 platform :ios do
 # === Build-only Lanes ===
   desc "Build unsigned debug archive"
@@ -73,7 +79,8 @@ platform :ios do
       configuration: configuration,
       build_for_testing: true,
       clean: true,
-      xcargs: xcargs
+      xcargs: xcargs,
+      buildlog_path: TEST_LOGS_PATH
     )
   end
 
@@ -164,7 +171,8 @@ platform :ios do
       skip_package_ipa: true,
       derived_data_path: paths[:derived_data_path],
       archive_path: paths[:archive_path],
-      export_team_id: ENV['TEAM_ID']
+      export_team_id: ENV['TEAM_ID'],
+      buildlog_path: BUILD_LOGS_PATH
     )
   end
 
@@ -206,7 +214,8 @@ platform :ios do
       result_bundle_path: result_path,
       code_coverage: false,
       output_types: "xcresult",
-      clean: false
+      clean: false,
+      buildlog_path: TEST_LOGS_PATH
     }
 
     scan_args[:test_without_building] = options[:test_without_building] if options[:test_without_building]
