@@ -21,10 +21,6 @@ build/
 Package.resolved
 .swiftpm/
 
-# Fastlane files
-fastlane/README.md
-fastlane/report.xml
-
 # macOS system files
 .DS_Store
 .AppleDouble

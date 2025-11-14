@@ -14,9 +14,12 @@ SCHEMES = {
 }.freeze
 
 # === Test Paths ===
-BUILD_PATH = "fastlane/build"
+BUILD_PATH = "build"
+LOGS_PATH = "fastlane/logs"
+TEST_LOGS_PATH = "#{LOGS_PATH}/test"
+BUILD_LOGS_PATH = "#{LOGS_PATH}/build"
+
 TEST_RESULTS_PATH = "#{BUILD_PATH}/test-results"
-TEST_DERIVED_DATA_PATH = "#{BUILD_PATH}/test-results/DerivedData"
 UNIT_TEST_RESULT_PATH = "#{TEST_RESULTS_PATH}/unit/TestResults.xcresult"
 UI_TEST_RESULT_PATH = "#{TEST_RESULTS_PATH}/ui/TestResults.xcresult"
 INTG_TEST_RESULT_PATH = "#{TEST_RESULTS_PATH}/intg/TestResults.xcresult"
@@ -28,8 +31,9 @@ DEBUG_ARCHIVE_PATH = "#{DEBUG_EXPORT_BASE}/archive/TemplateApp.xcarchive"
 RELEASE_ARCHIVE_PATH = "#{RELEASE_EXPORT_BASE}/archive/TemplateApp.xcarchive"
 
 # === Build DerivedData Paths ===
-DEBUG_BUILD_DERIVED_DATA_PATH = "#{DEBUG_EXPORT_BASE}/archive/DerivedData"
-RELEASE_BUILD_DERIVED_DATA_PATH = "#{RELEASE_EXPORT_BASE}/archive/DerivedData"
+TEST_DERIVED_DATA_PATH = "fastlane/build/test-results/DerivedData"
+DEBUG_BUILD_DERIVED_DATA_PATH = "fastlane/build/debug/archive/DerivedData"
+RELEASE_BUILD_DERIVED_DATA_PATH = "fastlane/build/release/archive/DerivedData"
 
 # === Configurations ===
 CONFIGURATIONS = {
