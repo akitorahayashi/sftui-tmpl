@@ -31,9 +31,9 @@ DEBUG_ARCHIVE_PATH = "#{DEBUG_EXPORT_BASE}/archive/TemplateApp.xcarchive"
 RELEASE_ARCHIVE_PATH = "#{RELEASE_EXPORT_BASE}/archive/TemplateApp.xcarchive"
 
 # === Build DerivedData Paths ===
-TEST_DERIVED_DATA_PATH = "fastlane/#{BUILD_PATH}/test-results/DerivedData"
-DEBUG_BUILD_DERIVED_DATA_PATH = "fastlane/#{DEBUG_EXPORT_BASE}/archive/DerivedData"
-RELEASE_BUILD_DERIVED_DATA_PATH = "fastlane/#{RELEASE_EXPORT_BASE}/archive/DerivedData"
+TEST_DERIVED_DATA_PATH = "fastlane/build/test-results/DerivedData"
+DEBUG_BUILD_DERIVED_DATA_PATH = "fastlane/build/debug/archive/DerivedData"
+RELEASE_BUILD_DERIVED_DATA_PATH = "fastlane/build/release/archive/DerivedData"
 
 # === Configurations ===
 CONFIGURATIONS = {
