@@ -64,14 +64,14 @@ platform :ios do
     configuration = options[:configuration] || CONFIGURATIONS[:debug]
     derived_data_path = "#{TEST_DERIVED_DATA_PATH}/#{configuration}"
 
-    passed_xcargs = options[:xcargs] || "" # xcargs を受け取る
+    passed_xcargs = options[:xcargs] || ""
 
     xcargs_items = []
     if configuration == CONFIGURATIONS[:release]
       xcargs_items << "ENABLE_TESTABILITY=YES"
     end
     
-    xcargs_items << passed_xcargs unless passed_xcargs.empty? # xcargs をマージ
+    xcargs_items << passed_xcargs unless passed_xcargs.empty?
     xcargs = xcargs_items.join(' ')
 
     get_simulator_info
@@ -85,7 +85,7 @@ platform :ios do
       build_for_testing: true,
       clean: true,
       buildlog_path: TEST_LOGS_PATH,
-      suppress_xcode_output: true # ログ抑制
+      suppress_xcode_output: true
     }
     scan_args[:xcargs] = xcargs unless xcargs.empty?
     scan(**scan_args)
@@ -168,7 +168,7 @@ platform :ios do
 
   private_lane :build_app_with_config do |options|
     configuration = options[:configuration]
-    passed_xcargs = options[:xcargs] || "" # xcargs を受け取る
+    passed_xcargs = options[:xcargs] || ""
     paths = config_paths(configuration)
     build_app(
       project: PROJECT_PATH,
@@ -181,8 +181,8 @@ platform :ios do
       archive_path: paths[:archive_path],
       export_team_id: ENV['TEAM_ID'],
       buildlog_path: BUILD_LOGS_PATH,
-      suppress_xcode_output: true, # ログ抑制
-      xcargs: passed_xcargs          # xcargs を渡す
+      suppress_xcode_output: true,
+      xcargs: passed_xcargs
     )
   end
 
@@ -219,8 +219,7 @@ platform :ios do
     configuration = options[:configuration] || CONFIGURATIONS[:debug]
     derived_data_path = "#{TEST_DERIVED_DATA_PATH}/#{configuration}"
     
-    simulator_name = options[:simulator_name]
-    passed_xcargs = options[:xcargs] || "" # xcargs を受け取る
+    passed_xcargs = options[:xcargs] || ""
 
     scan_args = {
       project: PROJECT_PATH,
@@ -232,14 +231,13 @@ platform :ios do
       output_types: "xcresult",
       clean: false,
       buildlog_path: TEST_LOGS_PATH,
-      suppress_xcode_output: true # ログ抑制
+      suppress_xcode_output: true
     }
 
-    scan_args[:xcargs] = passed_xcargs unless passed_xcargs.empty? # xcargs を渡す
+    scan_args[:xcargs] = passed_xcargs unless passed_xcargs.empty?
     scan_args[:test_without_building] = options[:test_without_building] if options[:test_without_building]
 
     begin
-      scan_args[:suppress_xcode_output] = true
       scan_args[:fail_build] = false
       scan(**scan_args)
       UI.success("✅ Test successful for scheme '#{options[:scheme]}' (output suppressed)")
