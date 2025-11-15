@@ -25,10 +25,8 @@ UI_TEST_RESULT_PATH = "#{TEST_RESULTS_PATH}/ui/TestResults.xcresult"
 INTG_TEST_RESULT_PATH = "#{TEST_RESULTS_PATH}/intg/TestResults.xcresult"
 
 # === Archive Paths ===
-DEBUG_EXPORT_BASE = "#{BUILD_PATH}/debug"
-RELEASE_EXPORT_BASE = "#{BUILD_PATH}/release"
-DEBUG_ARCHIVE_PATH = "#{DEBUG_EXPORT_BASE}/archive/TemplateApp.xcarchive"
-RELEASE_ARCHIVE_PATH = "#{RELEASE_EXPORT_BASE}/archive/TemplateApp.xcarchive"
+DEBUG_ARCHIVE_PATH = "fastlane/build/debug/archive/TemplateApp.xcarchive"
+RELEASE_ARCHIVE_PATH = "fastlane/build/release/archive/TemplateApp.xcarchive"
 
 # === Build DerivedData Paths ===
 TEST_DERIVED_DATA_PATH = "fastlane/build/test-results/DerivedData"

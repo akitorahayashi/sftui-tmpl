@@ -23,16 +23,18 @@ end
 platform :ios do
 # === Build-only Lanes ===
   desc "Build unsigned debug archive"
-  lane :build_debug do
+  lane :build_debug do |options|
     build_app_with_config(
-      configuration: CONFIGURATIONS[:debug]
+      configuration: CONFIGURATIONS[:debug],
+      xcargs: options[:xcargs] || ""
     )
   end
 
   desc "Build unsigned release archive"
-  lane :build_release do
+  lane :build_release do |options|
     build_app_with_config(
-      configuration: CONFIGURATIONS[:release]
+      configuration: CONFIGURATIONS[:release],
+      xcargs: options[:xcargs] || ""
     )
   end
 
@@ -61,17 +63,20 @@ platform :ios do
   lane :build_for_testing do |options|
     configuration = options[:configuration] || CONFIGURATIONS[:debug]
     derived_data_path = "#{TEST_DERIVED_DATA_PATH}/#{configuration}"
-    
-    # Add ENABLE_TESTABILITY for Release builds to allow @testable import
+
+    passed_xcargs = options[:xcargs] || "" # xcargs を受け取る
+
     xcargs_items = []
     if configuration == CONFIGURATIONS[:release]
       xcargs_items << "ENABLE_TESTABILITY=YES"
     end
-    xcargs = xcargs_items.join(' ')
     
+    xcargs_items << passed_xcargs unless passed_xcargs.empty? # xcargs をマージ
+    xcargs = xcargs_items.join(' ')
+
     get_simulator_info
     udid = Actions.lane_context[:SIMULATOR_UDID]
-    scan(
+    scan_args = {
       project: PROJECT_PATH,
       scheme: SCHEMES[:app],
       destination: "platform=iOS Simulator,id=#{udid}",
@@ -79,9 +84,11 @@ platform :ios do
       configuration: configuration,
       build_for_testing: true,
       clean: true,
-      xcargs: xcargs,
-      buildlog_path: TEST_LOGS_PATH
-    )
+      buildlog_path: TEST_LOGS_PATH,
+      suppress_xcode_output: true # ログ抑制
+    }
+    scan_args[:xcargs] = xcargs unless xcargs.empty?
+    scan(**scan_args)
   end
 
   desc "Run unit tests"
@@ -161,6 +168,7 @@ platform :ios do
 
   private_lane :build_app_with_config do |options|
     configuration = options[:configuration]
+    passed_xcargs = options[:xcargs] || "" # xcargs を受け取る
     paths = config_paths(configuration)
     build_app(
       project: PROJECT_PATH,
@@ -172,7 +180,9 @@ platform :ios do
       derived_data_path: paths[:derived_data_path],
       archive_path: paths[:archive_path],
       export_team_id: ENV['TEAM_ID'],
-      buildlog_path: BUILD_LOGS_PATH
+      buildlog_path: BUILD_LOGS_PATH,
+      suppress_xcode_output: true, # ログ抑制
+      xcargs: passed_xcargs          # xcargs を渡す
     )
   end
 
@@ -205,26 +215,34 @@ platform :ios do
     sh("rm -rf \"#{result_path}\"")
     get_simulator_info
     udid = Actions.lane_context[:SIMULATOR_UDID]
+    
+    configuration = options[:configuration] || CONFIGURATIONS[:debug]
+    derived_data_path = "#{TEST_DERIVED_DATA_PATH}/#{configuration}"
+    
+    simulator_name = options[:simulator_name]
+    passed_xcargs = options[:xcargs] || "" # xcargs を受け取る
 
     scan_args = {
       project: PROJECT_PATH,
       scheme: options[:scheme],
       destination: "platform=iOS Simulator,id=#{udid}",
-      derived_data_path: "#{TEST_DERIVED_DATA_PATH}/#{CONFIGURATIONS[:debug]}",
+      derived_data_path: derived_data_path,
       result_bundle_path: result_path,
       code_coverage: false,
       output_types: "xcresult",
       clean: false,
-      buildlog_path: TEST_LOGS_PATH
+      buildlog_path: TEST_LOGS_PATH,
+      suppress_xcode_output: true # ログ抑制
     }
 
+    scan_args[:xcargs] = passed_xcargs unless passed_xcargs.empty? # xcargs を渡す
     scan_args[:test_without_building] = options[:test_without_building] if options[:test_without_building]
 
     begin
       scan_args[:suppress_xcode_output] = true
       scan_args[:fail_build] = false
       scan(**scan_args)
-      UI.success("✅ Test successful (output suppressed)")
+      UI.success("✅ Test successful for scheme '#{options[:scheme]}' (output suppressed)")
     rescue => ex
       log_path = lane_context[SharedValues::SCAN_BUILDLOG_PATH]
       UI.error("❌ Test failed. Showing last 100 lines from log: #{log_path}")
