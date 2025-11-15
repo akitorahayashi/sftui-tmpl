@@ -45,10 +45,10 @@ setup:
     @echo "Bootstrapping Mint packages..."
     @mint bootstrap
     @echo "Generating Xcode project..."
-    @just gen-proj
+    @just gen-pj
 
 # Generate Xcode project
-gen-proj:
+gen-pj:
     @echo "Generating Xcode project with TEAM_ID: {{TEAM_ID}}"
     @TEAM_ID={{TEAM_ID}} envsubst < project.envsubst.yml > project.yml
     @mint run xcodegen generate
@@ -198,3 +198,12 @@ clean:
     @rm -rf fastlane/report.xml
     @rm -rf .build
     @rm -rf {{SWIFTPM_CACHE_PATH}}
+    
+
+# @hidden
+# Helper to run fastlane test lanes
+_run_fastlane_test lane:
+    @set -e; \
+    _XCARGS="-skipMacroValidation"; \
+    echo "Running fastlane {{lane}} with xcargs: ${_XCARGS}"; \
+    bundle exec fastlane {{lane}} xcargs:${_XCARGS};

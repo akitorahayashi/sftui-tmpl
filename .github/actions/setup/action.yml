@@ -39,7 +39,7 @@ runs:
 
     - name: Generate Xcode Project
       if: inputs.generate_project == 'true'
-      run: just gen-proj
+      run: just gen-pj
       shell: bash
 
     - name: Setup Ruby
