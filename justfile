@@ -158,105 +158,38 @@ sign-release-enterprise:
 
 # Build for testing
 build-for-testing:
-    @if [ -n "$CI" ]; then \
-        @bundle exec fastlane build_for_testing; \
-    else \
-        @if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
-            echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
-            exit 1; \
-        fi; \
-        @bundle exec fastlane build_for_testing udid:{{TEST_SIMULATOR_UDID}}; \
-    fi
+    @just _run_fastlane_build_for_testing
 
 # Run unit tests
 unit-test:
-    @if [ -n "$CI" ]; then \
-        @just _run_fastlane_test unit_test ""; \
-    else \
-        @if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
-            echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
-            exit 1; \
-        fi; \
-        @just _run_fastlane_test unit_test {{TEST_SIMULATOR_UDID}}; \
-    fi
+    @just _run_fastlane_test unit_test
 
 # Run unit tests without building
 unit-test-without-building:
-    @if [ -n "$CI" ]; then \
-        @just _run_fastlane_test unit_test_without_building ""; \
-    else \
-        @if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
-            echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
-            exit 1; \
-        fi; \
-        @just _run_fastlane_test unit_test_without_building {{TEST_SIMULATOR_UDID}}; \
-    fi
+    @just _run_fastlane_test unit_test_without_building
 
 # Run integration tests
 intg-test:
-    @if [ -n "$CI" ]; then \
-        @just _run_fastlane_test intg_test ""; \
-    else \
-        @if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
-            echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
-            exit 1; \
-        fi; \
-        @just _run_fastlane_test intg_test {{TEST_SIMULATOR_UDID}}; \
-    fi
+    @just _run_fastlane_test intg_test
 
 # Run integration tests without building
 intg-test-without-building:
-    @if [ -n "$CI" ]; then \
-        @just _run_fastlane_test intg_test_without_building ""; \
-    else \
-        @if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
-            echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
-            exit 1; \
-        fi; \
-        @just _run_fastlane_test intg_test_without_building {{TEST_SIMULATOR_UDID}}; \
-    fi
+    @just _run_fastlane_test intg_test_without_building
 
 # Run UI tests
 ui-test:
-    @if [ -n "$CI" ]; then \
-        @just _run_fastlane_test ui_test ""; \
-    else \
-        @if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
-            echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
-            exit 1; \
-        fi; \
-        @just _run_fastlane_test ui_test {{TEST_SIMULATOR_UDID}}; \
-    fi
+    @just _run_fastlane_test ui_test
 
 # Run UI tests without building
 ui-test-without-building:
-    @if [ -n "$CI" ]; then \
-        @just _run_fastlane_test ui_test_without_building ""; \
-    else \
-        @if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
-            echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
-            exit 1; \
-        fi; \
-        @just _run_fastlane_test ui_test_without_building {{TEST_SIMULATOR_UDID}}; \
-    fi
+    @just _run_fastlane_test ui_test_without_building
 
 # Run all tests (unit, integration, UI)
 test:
-    @if [ -n "$CI" ]; then \
-        @bundle exec fastlane build_for_testing; \
-        @just unit-test-without-building; \
-        @just intg-test-without-building; \
-        @just ui-test-without-building; \
-    else \
-        @if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
-            echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
-            exit 1; \
-        fi; \
-        @bundle exec fastlane build_for_testing udid:{{TEST_SIMULATOR_UDID}}; \
-        @just unit-test-without-building; \
-        @just intg-test-without-building; \
-        @just ui-test-without-building; \
-    fi
+    @just _run_fastlane_build_for_testing
+    @just _run_fastlane_test unit_test_without_building
+    @just _run_fastlane_test intg_test_without_building
+    @just _run_fastlane_test ui_test_without_building
 
 # ==============================================================================
 # Lint & Format
@@ -286,10 +219,36 @@ clean:
     @rm -rf {{SWIFTPM_CACHE_PATH}}
     
 
+# ==============================================================================
+# HIDDEN RECIPES
+# ==============================================================================
+
+# @hidden
+# Helper to run fastlane build_for_testing
+_run_fastlane_build_for_testing:
+    if [ -n "$CI" ]; then \
+        @bundle exec fastlane build_for_testing; \
+    else \
+        if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
+            echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
+            exit 1; \
+        fi; \
+        @bundle exec fastlane build_for_testing udid:{{TEST_SIMULATOR_UDID}}; \
+    fi
+
 # @hidden
 # Helper to run fastlane test lanes
-_run_fastlane_test lane udid:
-    @set -e; \
+_run_fastlane_test lane:
+    set -e; \
     _XCARGS="-skipMacroValidation"; \
-    echo "Running fastlane {{lane}} with udid:{{udid}} xcargs: ${_XCARGS}"; \
-    bundle exec fastlane {{lane}} udid:{{udid}} xcargs:${_XCARGS};
+    if [ -n "$CI" ]; then \
+        echo "Running fastlane {{lane}} xcargs: ${_XCARGS}"; \
+        @bundle exec fastlane {{lane}} xcargs:${_XCARGS}; \
+    else \
+        if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
+            echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
+            exit 1; \
+        fi; \
+        echo "Running fastlane {{lane}} with udid:{{TEST_SIMULATOR_UDID}} xcargs: ${_XCARGS}"; \
+        @bundle exec fastlane {{lane}} udid:{{TEST_SIMULATOR_UDID}} xcargs:${_XCARGS}; \
+    fi
