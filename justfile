@@ -226,14 +226,14 @@ clean:
 # @hidden
 # Helper to run fastlane build_for_testing
 _run_fastlane_build_for_testing:
-    if [ -n "$CI" ]; then \
-        @bundle exec fastlane build_for_testing; \
+    if [ -n "${CI:-}" ]; then \
+        bundle exec fastlane build_for_testing; \
     else \
         if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
             echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
             exit 1; \
         fi; \
-        @bundle exec fastlane build_for_testing udid:{{TEST_SIMULATOR_UDID}}; \
+        bundle exec fastlane build_for_testing udid:{{TEST_SIMULATOR_UDID}}; \
     fi
 
 # @hidden
@@ -241,14 +241,14 @@ _run_fastlane_build_for_testing:
 _run_fastlane_test lane:
     set -e; \
     _XCARGS="-skipMacroValidation"; \
-    if [ -n "$CI" ]; then \
+    if [ -n "${CI:-}" ]; then \
         echo "Running fastlane {{lane}} xcargs: ${_XCARGS}"; \
-        @bundle exec fastlane {{lane}} xcargs:${_XCARGS}; \
+        bundle exec fastlane {{lane}} xcargs:${_XCARGS}; \
     else \
         if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
             echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
             exit 1; \
         fi; \
         echo "Running fastlane {{lane}} with udid:{{TEST_SIMULATOR_UDID}} xcargs: ${_XCARGS}"; \
-        @bundle exec fastlane {{lane}} udid:{{TEST_SIMULATOR_UDID}} xcargs:${_XCARGS}; \
+        bundle exec fastlane {{lane}} udid:{{TEST_SIMULATOR_UDID}} xcargs:${_XCARGS}; \
     fi
