@@ -74,7 +74,7 @@ platform :ios do
     xcargs_items << passed_xcargs unless passed_xcargs.empty?
     xcargs = xcargs_items.join(' ')
 
-    get_simulator_info
+    get_simulator_info(options)
     udid = Actions.lane_context[:SIMULATOR_UDID]
     scan_args = {
       project: PROJECT_PATH,
@@ -132,17 +132,16 @@ platform :ios do
 # === Private ===
 
   desc "Get simulator information based on environment"
-  private_lane :get_simulator_info do
-    udid = nil
-    if is_ci?
-      udid = sh("xcrun simctl list devices available 'iPhone' | grep -Eo '[A-F0-9-]{36}' | head -n 1").strip
-      if udid.nil? || udid.empty?
-        UI.user_error!("CI環境で利用可能なiPhoneシミュレータのUDIDが取得できませんでした")
-      end
-    else
-      udid = ENV['LOCAL_SIMULATOR_UDID']
-      if udid.nil? || udid.empty?
-        UI.user_error!("LOCAL_SIMULATOR_UDIDが設定されていません。環境変数をセットしてください")
+  private_lane :get_simulator_info do |options|
+    udid = options[:udid]
+    if udid.nil? || udid.empty?
+      if is_ci?
+        udid = sh("xcrun simctl list devices available 'iPhone' | grep -Eo '[A-F0-9-]{36}' | head -n 1").strip
+        if udid.nil? || udid.empty?
+          UI.user_error!("CI環境で利用可能なiPhoneシミュレータのUDIDが取得できませんでした")
+        end
+      else
+        UI.user_error!("UDIDが指定されていません。justfileからudidオプションを渡してください")
       end
     end
     Actions.lane_context[:SIMULATOR_UDID] = udid
@@ -213,7 +212,7 @@ platform :ios do
   private_lane :test_with_scheme do |options|
     result_path = File.expand_path(options[:result_path], Dir.pwd)
     sh("rm -rf \"#{result_path}\"")
-    get_simulator_info
+    get_simulator_info(options)
     udid = Actions.lane_context[:SIMULATOR_UDID]
     
     configuration = options[:configuration] || CONFIGURATIONS[:debug]

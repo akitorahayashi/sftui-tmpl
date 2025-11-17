@@ -14,7 +14,20 @@ First, in the project root directory, change the template placeholder names to y
 2. `TemplateAppTests` -> `NewAppTests`
 3. `TemplateAppUITests` -> `NewAppUITests`
 
-### 2. Update Configuration Files
+### 3. Configure Environment Variables
+
+Copy `.env.example` to `.env` and update the values as needed.
+
+#### Simulator Configuration
+
+This project uses separate simulators for development and testing to enable parallel workflows:
+
+- `DEV_SIMULATOR_UDID`: UDID of the simulator used for app execution, debugging, and UI verification (used by `just boot`, `just run-debug`, etc.)
+- `TEST_SIMULATOR_UDID`: UDID of the simulator used for automated test execution (used by `just test`, `just unit-test`, etc.)
+
+To find your simulator UDID, run `xcrun simctl list devices` and copy the UUID of the desired simulator.
+
+**Note:** Both variables must be set for full functionality. If you use the same simulator for both, set the same UDID for both variables.
 
 Next, update the values in various configuration files to match your new project name.
 
