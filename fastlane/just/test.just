@@ -6,14 +6,10 @@ import 'module.just'
 
 # Run all tests (unit, integration, UI)
 test:
-    @just build-for-testing
+    @just build-test
     @just unit-test-without-building
     @just intg-test-without-building
     @just ui-test-without-building
-
-# Build for testing
-build-for-testing:
-    @just _run_fastlane "build_for_testing"
 
 # Run unit tests
 unit-test:

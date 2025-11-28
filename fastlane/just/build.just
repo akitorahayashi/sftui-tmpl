@@ -23,3 +23,7 @@ run-release:
     @bundle exec fastlane build_for_testing configuration:Release udid:{{DEV_SIMULATOR_UDID}}
     @xcrun simctl install {{DEV_SIMULATOR_UDID}} {{RELEASE_APP_PATH}}
     @xcrun simctl launch {{DEV_SIMULATOR_UDID}} {{APP_BUNDLE_ID}}
+
+# Build for testing
+build-test:
+    @just _run_fastlane "build_for_testing"
