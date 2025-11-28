@@ -20,6 +20,17 @@ TEAM_ID := env("TEAM_ID", "")
 DEV_SIMULATOR_UDID := env("DEV_SIMULATOR_UDID", "")
 TEST_SIMULATOR_UDID := env("TEST_SIMULATOR_UDID", "")
 
+# ==============================================================================
+# Imports
+# ==============================================================================
+import 'fastlane/just/test.just'
+import 'fastlane/just/build.just'
+import 'fastlane/just/sign.just'
+
+# ==============================================================================
+# Main
+# ==============================================================================
+
 # default recipe
 default: help
 
@@ -105,91 +116,6 @@ boot-test:
 # List available simulators
 siml:
     @xcrun simctl list devices available
-    
-# Build debug, install, and launch on local simulator
-run-debug:
-    @just boot
-    @bundle exec fastlane build_for_testing udid:{{DEV_SIMULATOR_UDID}}
-    @xcrun simctl install {{DEV_SIMULATOR_UDID}} {{DEBUG_APP_PATH}}
-    @xcrun simctl launch {{DEV_SIMULATOR_UDID}} {{APP_BUNDLE_ID}}
-
-# Build release, install, and launch on local simulator
-run-release:
-    @just boot
-    @bundle exec fastlane build_for_testing configuration:Release udid:{{DEV_SIMULATOR_UDID}}
-    @xcrun simctl install {{DEV_SIMULATOR_UDID}} {{RELEASE_APP_PATH}}
-    @xcrun simctl launch {{DEV_SIMULATOR_UDID}} {{APP_BUNDLE_ID}}
-
-# ==============================================================================
-# Build & Sign
-# ==============================================================================
-
-# Build Debug archive (unsigned)
-build-debug:
-    @bundle exec fastlane build_debug
-
-# Build Release archive (unsigned)
-build-release:
-    @bundle exec fastlane build_release
-
-# Sign debug archive for development
-sign-debug-development:
-    @bundle exec fastlane sign_debug_development
-
-# Sign release archive for development
-sign-release-development:
-    @bundle exec fastlane sign_release export_method:development
-
-# Sign release archive for App Store
-sign-release-app-store:
-    @bundle exec fastlane sign_release export_method:app_store
-
-# Sign release archive for Ad Hoc
-sign-release-ad-hoc:
-    @bundle exec fastlane sign_release export_method:ad_hoc
-
-# Sign release archive for Enterprise
-sign-release-enterprise:
-    @bundle exec fastlane sign_release export_method:enterprise
-
-# ==============================================================================
-# Testing
-# ==============================================================================
-
-# Build for testing
-build-for-testing:
-    @just _run_fastlane_build_for_testing
-
-# Run unit tests
-unit-test:
-    @just _run_fastlane_test unit_test
-
-# Run unit tests without building
-unit-test-without-building:
-    @just _run_fastlane_test unit_test_without_building
-
-# Run integration tests
-intg-test:
-    @just _run_fastlane_test intg_test
-
-# Run integration tests without building
-intg-test-without-building:
-    @just _run_fastlane_test intg_test_without_building
-
-# Run UI tests
-ui-test:
-    @just _run_fastlane_test ui_test
-
-# Run UI tests without building
-ui-test-without-building:
-    @just _run_fastlane_test ui_test_without_building
-
-# Run all tests (unit, integration, UI)
-test:
-    @just _run_fastlane_build_for_testing
-    @just _run_fastlane_test unit_test_without_building
-    @just _run_fastlane_test intg_test_without_building
-    @just _run_fastlane_test ui_test_without_building
 
 # ==============================================================================
 # Lint & Format
@@ -217,38 +143,3 @@ clean:
     @rm -rf fastlane/report.xml
     @rm -rf .build
     @rm -rf {{SWIFTPM_CACHE_PATH}}
-    
-
-# ==============================================================================
-# HIDDEN RECIPES
-# ==============================================================================
-
-# @hidden
-# Helper to run fastlane build_for_testing
-_run_fastlane_build_for_testing:
-    if [ -n "${CI:-}" ]; then \
-        bundle exec fastlane build_for_testing; \
-    else \
-        if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
-            echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
-            exit 1; \
-        fi; \
-        bundle exec fastlane build_for_testing udid:{{TEST_SIMULATOR_UDID}}; \
-    fi
-
-# @hidden
-# Helper to run fastlane test lanes
-_run_fastlane_test lane:
-    set -e; \
-    _XCARGS="-skipMacroValidation"; \
-    if [ -n "${CI:-}" ]; then \
-        echo "Running fastlane {{lane}} xcargs: ${_XCARGS}"; \
-        bundle exec fastlane {{lane}} xcargs:${_XCARGS}; \
-    else \
-        if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
-            echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
-            exit 1; \
-        fi; \
-        echo "Running fastlane {{lane}} with udid:{{TEST_SIMULATOR_UDID}} xcargs: ${_XCARGS}"; \
-        bundle exec fastlane {{lane}} udid:{{TEST_SIMULATOR_UDID}} xcargs:${_XCARGS}; \
-    fi
