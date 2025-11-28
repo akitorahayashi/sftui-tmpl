@@ -21,11 +21,11 @@ DEV_SIMULATOR_UDID := env("DEV_SIMULATOR_UDID", "")
 TEST_SIMULATOR_UDID := env("TEST_SIMULATOR_UDID", "")
 
 # ==============================================================================
-# Imports (Fastlane Domain Split)
+# Imports
 # ==============================================================================
-import 'fastlane/test.just'
-import 'fastlane/build.just'
-import 'fastlane/sign.just'
+import 'fastlane/just/test.just'
+import 'fastlane/just/build.just'
+import 'fastlane/just/sign.just'
 
 # ==============================================================================
 # Main
