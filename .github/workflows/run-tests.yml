@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  build-for-testing:
+  build-test:
     runs-on: macos-14
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
@@ -33,7 +33,7 @@ jobs:
 
   unit-test:
     runs-on: macos-14
-    needs: build-for-testing
+    needs: build-test
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
     steps:
@@ -68,7 +68,7 @@ jobs:
 
   intg-test:
     runs-on: macos-14
-    needs: build-for-testing
+    needs: build-test
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
     steps:
@@ -103,7 +103,7 @@ jobs:
 
   ui-test:
     runs-on: macos-14
-    needs: build-for-testing
+    needs: build-test
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
     steps:
