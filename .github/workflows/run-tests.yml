@@ -21,7 +21,7 @@ jobs:
           setup_ruby: true
 
       - name: Build for Testing
-        run: just build-for-testing
+        run: just build-test
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
