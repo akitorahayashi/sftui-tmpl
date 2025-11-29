@@ -4,6 +4,7 @@
 
 # @hidden
 # Helper to run fastlane lanes with CI/UDID logic and common arguments
+[no-cd]
 _run_fastlane lane udid="" xcargs="-skipMacroValidation":
     @set -e; \
     if [ -n "${CI:-}" ]; then \
