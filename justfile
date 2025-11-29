@@ -145,7 +145,7 @@ clean:
 
 # Run all tests (unit, integration, UI)
 test:
-    @just fastlane::test
+    @just fastlane::test-all
 
 # Run unit tests
 unit-test:

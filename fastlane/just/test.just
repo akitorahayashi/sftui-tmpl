@@ -4,7 +4,7 @@
 
 # Run all tests (unit, integration, UI)
 [no-cd]
-test:
+test-all:
     @just fastlane::build-test
     @just fastlane::unit-test-without-building
     @just fastlane::intg-test-without-building
