@@ -1,5 +1,5 @@
 import Foundation
 
-protocol CountLogicProtocol {
+protocol CountLogicProtocol: Sendable {
     func fetchCurrentCount() async throws -> Int
 }
