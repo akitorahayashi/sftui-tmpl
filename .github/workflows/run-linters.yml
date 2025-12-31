@@ -21,4 +21,4 @@ jobs:
         setup_ruby: false
 
     - name: Run Linters
-      run: just lint
+      run: just check

@@ -117,12 +117,12 @@ siml:
 # ==============================================================================
 
 # Format code
-format:
+fix:
     @mint run swiftformat .
     @mint run swiftlint lint --fix .
 
 # Check code format
-lint:
+check: fix
     @mint run swiftformat --lint .
     @mint run swiftlint lint --strict
 
