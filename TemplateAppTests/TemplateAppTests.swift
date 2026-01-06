@@ -2,7 +2,7 @@
 import XCTest
 
 final class TemplateAppTests: XCTestCase {
-    func testExample() {
-        XCTAssertTrue(true)
-    }
+  func testExample() {
+    XCTAssertTrue(true)
+  }
 }

@@ -21,13 +21,14 @@ included:
 excluded:
   - .git
   - .build
+  - "**/.build"
+  - "**/.swiftpm"
   - DerivedData
   - .github
   - Carthage
   - build
   - xcbuild
-  - "**/*.generated.swift"
-  - "**/*.xcodeproj"
+  - references
 
 #-------------------------------------------------------------------
 # Rule Configuration
@@ -35,51 +36,48 @@ excluded:
 disabled_rules:
   - trailing_whitespace # Allow trailing whitespace
   - line_length # Line length is customized separately
-  - trailing_newline # Ignore trailing newline
-  - trailing_comma # Disabled because controlled by SwiftFormat
+  - trailing_newline # Ignore trailing newlines
+  - trailing_comma # Disabled as it is controlled by SwiftFormat
   - missing_docs # Disable requirement for public API documentation
-  - opening_brace # Disable opening brace placement rule
-  - multiple_closures_with_trailing_closure # Allow trailing closure syntax when there are multiple closures
-  - function_body_length # Disable function body length limit
-  - type_body_length # Disable type body length limit
+  - opening_brace # Disable brace placement rules
+  - closure_parameter_position # Disable closure parameter position rules (conflicts with SwiftFormat)
+  - multiple_closures_with_trailing_closure # Allow trailing closure syntax for multiple closures
+  - function_body_length # Disable function body length limits
+  - type_body_length # Disable type definition length limits
+  - cyclomatic_complexity # Disable cyclomatic complexity limits
 
 opt_in_rules:
   - empty_count # Use isEmpty instead of count == 0
   - force_unwrapping # Prohibit force unwrapping
   - sorted_imports # Sort imports
   - vertical_whitespace # Organize vertical whitespace
-  - explicit_init # Explicitly describe all init
+  - explicit_init # Explicitly describe all init statements
   - first_where # Prefer first(where:) over filter { ... }.first
   - toggle_bool # Prefer foo.toggle() over foo = !foo
 
 analyzer_rules:
   - unused_declaration # Detect unused declarations
   - unused_import # Detect unused imports
-  - explicit_self # Explicit self. when referencing properties or methods
-  - redundant_nil_coalescing # Detect redundant ?? nil
+  - explicit_self # Require self. for property and method references
+  - redundant_nil_coalescing # Detect unnecessary ?? nil
 
 #-------------------------------------------------------------------
 # Individual Rule Settings
 #-------------------------------------------------------------------
 
-# File length limit
+# File length limits
 file_length:
   warning: 600
   error: 1000
 
-# Cyclomatic complexity limit - calculated by total number of branches and loops like if/switch/for
-cyclomatic_complexity:
-  warning: 10
-  error: 20
-
-# Nesting limit
+# Nesting limits
 nesting:
   type_level:
     warning: 3
   function_level:
     warning: 5
 
-# Naming rules for identifiers (variable names, constant names, etc.)
+# Identifier naming rules (variable names, constant names, etc.)
 identifier_name:
   min_length: 2
   max_length: 50
@@ -95,7 +93,7 @@ identifier_name:
     - from
     - with
 
-# Switch case alignment - match with SwiftFormat
+# Switch case alignment - align with SwiftFormat
 switch_case_alignment:
   indented_cases: true
 

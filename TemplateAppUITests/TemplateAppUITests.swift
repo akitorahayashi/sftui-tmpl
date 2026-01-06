@@ -2,10 +2,10 @@ import XCTest
 
 @MainActor
 final class TemplateAppUITests: XCTestCase {
-    func testExample() throws {
-        let app = XCUIApplication()
-        app.launch()
+  func testExample() throws {
+    let app = XCUIApplication()
+    app.launch()
 
-        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 5))
-    }
+    XCTAssertTrue(app.wait(for: .runningForeground, timeout: 5))
+  }
 }
