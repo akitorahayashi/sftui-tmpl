@@ -44,7 +44,7 @@ This is the source file for the Xcode project (`.xcodeproj`).
 | `targets.TemplateAppUITests.sources` | `[TemplateAppUITests]` | `[NewAppUITests]` | Specify the source directory name for UI tests. |
 | `schemes` | `TemplateApp`, `TemplateAppTests` ... | `NewApp`, `NewAppTests` ... | Change scheme names to match the new project name. |
 
-**Note:** After changing `project.yml`, be sure to run `just gen-proj` to regenerate the `.xcodeproj` file.
+**Note:** After changing `project.yml`, be sure to run `just gen-pj` to regenerate the `.xcodeproj` file.
 
 #### Info.plist Files
 
@@ -104,7 +104,7 @@ This project exposes a standardized set of recipes through `just`. These command
 - `just gen-pj` - Generate Xcode project from `project.envsubst.yml`
 
 ### Code Quality
-- `just check` - Verify code formatting and linting 
+- `just check` - Verify code formatting and linting
 - `just fix` - Apply code formatting and linting fixes
 
 ### Testing
