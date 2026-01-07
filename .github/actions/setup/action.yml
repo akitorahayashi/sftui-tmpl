@@ -35,7 +35,7 @@ runs:
       with:
         path: |
           ~/Library/Developer/Xcode/DerivedData/*/SourcePackages
-        key: ${{ runner.os }}-swiftpm-${{ hashFiles('project.envsubst.yml') }}
+        key: ${{ runner.os }}-swiftpm-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-swiftpm-
 
