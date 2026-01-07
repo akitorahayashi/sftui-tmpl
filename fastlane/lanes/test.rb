@@ -1,6 +1,8 @@
 # fastlane/lanes/test.rb
 # Test-related lanes and helpers
 
+require 'json'
+
 # === Test Lanes ===
 desc "Build for testing"
 lane :build_for_testing do |options|
@@ -79,7 +81,7 @@ private_lane :get_simulator_info do |options|
   udid = options[:udid]
   if udid.nil? || udid.empty?
     if is_ci?
-      udid = sh("xcrun simctl list devices available 'iPhone' | grep -Eo '[A-F0-9-]{36}' | head -n 1").strip
+      udid = find_available_iphone_simulator_udid
       if udid.nil? || udid.empty?
         UI.user_error!("Could not get UDID for an available iPhone simulator in the CI environment")
       end
@@ -133,4 +135,15 @@ private_lane :test_with_scheme do |options|
     end
     raise ex
   end
+end
+
+# Helper function to find an available iPhone simulator UDID using JSON parsing
+def find_available_iphone_simulator_udid
+  output = sh("xcrun simctl list devices available 'iPhone' -j", log: false)
+  devices_by_runtime = JSON.parse(output)['devices']
+  first_device = devices_by_runtime.values.flatten.first
+  (first_device && first_device['udid']) || ''
+rescue => e
+  UI.verbose("Error finding available iPhone simulator: #{e.class}: #{e.message}")
+  ""
 end
