@@ -5,13 +5,16 @@ on:
 
 jobs:
   build-test:
-    runs-on: macos-14
+    runs-on: macos-15
+    permissions:
+      contents: read
+    timeout-minutes: 30
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup environment
         uses: ./.github/actions/setup
@@ -32,14 +35,17 @@ jobs:
           retention-days: 1
 
   unit-test:
-    runs-on: macos-14
+    runs-on: macos-15
+    permissions:
+      contents: read
+    timeout-minutes: 20
     needs: build-test
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup environment
         uses: ./.github/actions/setup
@@ -67,14 +73,17 @@ jobs:
           retention-days: 3
 
   intg-test:
-    runs-on: macos-14
+    runs-on: macos-15
+    permissions:
+      contents: read
+    timeout-minutes: 20
     needs: build-test
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup environment
         uses: ./.github/actions/setup
@@ -102,14 +111,17 @@ jobs:
           retention-days: 3
 
   ui-test:
-    runs-on: macos-14
+    runs-on: macos-15
+    permissions:
+      contents: read
+    timeout-minutes: 20
     needs: build-test
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup environment
         uses: ./.github/actions/setup

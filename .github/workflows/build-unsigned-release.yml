@@ -10,7 +10,10 @@ on:
 
 jobs:
   archive:
-    runs-on: macos-14
+    runs-on: macos-15
+    permissions:
+      contents: read
+    timeout-minutes: 40
     env:
       MINT_PATH: ${{ github.workspace }}/.mint
       TEAM_ID: ${{ secrets.TEAM_ID }}
@@ -19,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup environment
         uses: ./.github/actions/setup
