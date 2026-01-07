@@ -4,10 +4,11 @@ This project is an iOS application template built with SwiftUI. It is designed t
 # Directory Structure
 ```
 .
-├── TemplateApp/               # Contains the main application source code, including Views, ViewModels, and Logic.
-├── TemplateAppTests/          # Contains unit tests for testing individual components and logic.
-├── TemplateAppIntgTests/      # Contains integration tests for verifying feature workflows using mock dependencies.
-├── TemplateAppUITests/        # Contains UI tests for end-to-end verification of user interactions.
+├── App/                       # Contains the main application source code, including Views, ViewModels, and Logic.
+├── Tests/
+│   ├── Unit/                  # Contains unit tests for testing individual components and logic.
+│   ├── Intg/                  # Contains integration tests for verifying feature workflows using mock dependencies.
+│   └── UI/                    # Contains UI tests for end-to-end verification of user interactions.
 ├── fastlane/                  # Stores Fastlane configuration and automation scripts (`Fastfile`, `just/` modules).
 ├── justfile                   # The entry point for project-specific command-line tasks.
 ├── project.envsubst.yml       # The template configuration file for `xcodegen` to generate the `.xcodeproj` file.
