@@ -31,9 +31,10 @@ This is the source file for the Xcode project (`.xcodeproj`).
 |---|---|---|---|
 | `name` | `TemplateApp` | `NewApp` | Project name. Match it with the directory name. |
 | `bundleIdPrefix` | `com.akitorahayashi` | `com.yourcompany` | Change to your bundle ID prefix. |
-| `targets.TemplateApp.sources` | `[App]` | `[App]` | Specify the source directory name for the main app. |
-| `targets.TemplateAppTests.sources` | `[Tests/Unit]` | `[Tests/Unit]` | Specify the source directory name for unit tests. |
-| `targets.TemplateAppUITests.sources` | `[Tests/UI]` | `[Tests/UI]` | Specify the source directory name for UI tests. |
+| `targets.TemplateApp.sources` | `[App]` | `[App]` | The source directory for the main app. This path is generic and typically does not require changes. |
+| `targets.TemplateAppTests.sources` | `[Tests/Unit]` | `[Tests/Unit]` | The source directory for unit tests. This path is generic and typically does not require changes. |
+| `targets.TemplateAppIntgTests.sources` | `[Tests/Intg]` | `[Tests/Intg]` | The source directory for integration tests. This path is generic and typically does not require changes. |
+| `targets.TemplateAppUITests.sources` | `[Tests/UI]` | `[Tests/UI]` | The source directory for UI tests. This path is generic and typically does not require changes. |
 | `schemes` | `TemplateApp`, `TemplateAppTests` ... | `NewApp`, `NewAppTests` ... | Change scheme names to match the new project name. |
 
 **Note:** After changing `project.yml`, be sure to run `just gen-pj` to regenerate the `.xcodeproj` file.
@@ -46,6 +47,7 @@ In the `Info.plist` files for each target, the bundle ID (`CFBundleIdentifier`) 
 |---|---|---|
 | `App/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewApp` |
 | `Tests/Unit/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewAppTests` |
+| `Tests/Intg/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewAppIntgTests` |
 | `Tests/UI/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewAppUITests` |
 
 #### justfile
