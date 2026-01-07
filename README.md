@@ -6,15 +6,7 @@ This is an iOS app template based on SwiftUI.
 
 When starting a new project from this template, follow these steps to set project-specific values.
 
-### 1. Change Project Name and Directory
-
-First, in the project root directory, change the template placeholder names to your new project name. For example, if your new project name is `NewApp`, change as follows:
-
-1. `TemplateApp` -> `NewApp`
-2. `TemplateAppTests` -> `NewAppTests`
-3. `TemplateAppUITests` -> `NewAppUITests`
-
-### 3. Configure Environment Variables
+### 1. Configure Environment Variables
 
 Copy `.env.example` to `.env` and update the values as needed.
 
@@ -39,9 +31,9 @@ This is the source file for the Xcode project (`.xcodeproj`).
 |---|---|---|---|
 | `name` | `TemplateApp` | `NewApp` | Project name. Match it with the directory name. |
 | `bundleIdPrefix` | `com.akitorahayashi` | `com.yourcompany` | Change to your bundle ID prefix. |
-| `targets.TemplateApp.sources` | `[TemplateApp]` | `[NewApp]` | Specify the source directory name for the main app. |
-| `targets.TemplateAppTests.sources` | `[TemplateAppTests]` | `[NewAppTests]` | Specify the source directory name for unit tests. |
-| `targets.TemplateAppUITests.sources` | `[TemplateAppUITests]` | `[NewAppUITests]` | Specify the source directory name for UI tests. |
+| `targets.TemplateApp.sources` | `[App]` | `[App]` | Specify the source directory name for the main app. |
+| `targets.TemplateAppTests.sources` | `[Tests/Unit]` | `[Tests/Unit]` | Specify the source directory name for unit tests. |
+| `targets.TemplateAppUITests.sources` | `[Tests/UI]` | `[Tests/UI]` | Specify the source directory name for UI tests. |
 | `schemes` | `TemplateApp`, `TemplateAppTests` ... | `NewApp`, `NewAppTests` ... | Change scheme names to match the new project name. |
 
 **Note:** After changing `project.yml`, be sure to run `just gen-pj` to regenerate the `.xcodeproj` file.
@@ -52,9 +44,9 @@ In the `Info.plist` files for each target, the bundle ID (`CFBundleIdentifier`) 
 
 | File | Key to Update | Example Changed Value (`NewApp`) |
 |---|---|---|
-| `TemplateApp/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewApp` |
-| `TemplateAppTests/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewAppTests` |
-| `TemplateAppUITests/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewAppUITests` |
+| `App/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewApp` |
+| `Tests/Unit/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewAppTests` |
+| `Tests/UI/Info.plist` | `CFBundleIdentifier` | `com.yourcompany.NewAppUITests` |
 
 #### justfile
 
@@ -82,15 +74,9 @@ This is the configuration file for `fastlane`. It defines specific behaviors for
 
 #### .swiftlint.yml
 
-This is the configuration file for SwiftLint.
+This is the configuration file for SwiftLint. The `included` paths (`App`, `Tests`) use generic directory names and typically do not require changes.
 
-| Setting Item | Current Value | Change Example (`NewApp`) | Details |
-|---|---|---|---|
-| `included` | `- TemplateApp` | `- NewApp` | Update the directory name for linting. |
-| | `- TemplateAppTests` | `- NewAppTests` | |
-| | `- TemplateAppUITests` | `- NewAppUITests` | |
-
-### .github/workflows/ci-cd-pipeline.yml
+### 2. GitHub Actions Configuration
 
 | Setting Item | Current Value | Details |
 |---|---|---|

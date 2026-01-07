@@ -10,10 +10,8 @@
 
 # Paths to include in linting
 included:
-  - TemplateApp/**/*.swift
-  - TemplateAppTests/**/*.swift
-  - TemplateAppUITests/**/*.swift
-  - TemplateAppIntgTests/**/*.swift
+  - App/**/*.swift
+  - Tests/**/*.swift
 
 #-------------------------------------------------------------------
 # Analysis Targets
