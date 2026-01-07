@@ -142,7 +142,8 @@ def find_available_iphone_simulator_udid
   output = sh("xcrun simctl list devices available 'iPhone' -j", log: false)
   devices_by_runtime = JSON.parse(output)['devices']
   first_device = devices_by_runtime.values.flatten.first
-  first_device ? first_device['udid'] : ''
-rescue StandardError
+  (first_device && first_device['udid']) || ''
+rescue => e
+  UI.verbose("Error finding available iPhone simulator: #{e.class}: #{e.message}")
   ""
 end
