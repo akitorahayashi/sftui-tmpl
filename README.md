@@ -95,3 +95,30 @@ This is the configuration file for SwiftLint.
 | Setting Item | Current Value | Details |
 |---|---|---|
 | `name` | `Template App CI/CD Pipeline` | Display name for the GitHub Actions workflow. Change to match the project name. |
+## Just Contract
+
+This project exposes a standardized set of recipes through `just`. These commands are stable and used by CI automation:
+
+### Setup and Project Generation
+- `just setup` - Initialize project: install dependencies (Ruby, Mint) and generate Xcode project
+- `just gen-pj` - Generate Xcode project from `project.envsubst.yml`
+
+### Code Quality
+- `just check` - Verify code formatting and linting 
+- `just fix` - Apply code formatting and linting fixes
+
+### Testing
+- `just build-test` - Build for testing (CI-compatible)
+- `just unit-test-without-building` - Run unit tests without building
+- `just intg-test-without-building` - Run integration tests without building
+- `just ui-test-without-building` - Run UI tests without building
+
+### Additional Commands
+- `just test` - Run all tests (with build)
+- `just unit-test` - Run unit tests (with build)
+- `just intg-test` - Run integration tests (with build)
+- `just ui-test` - Run UI tests (with build)
+- `just run-debug` - Build debug, install and launch on local simulator
+- `just run-release` - Build release, install and launch on local simulator
+- `just boot` - Boot the development simulator
+- `just boot-test` - Boot the test simulator
