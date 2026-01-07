@@ -81,10 +81,10 @@ private_lane :get_simulator_info do |options|
     if is_ci?
       udid = sh("xcrun simctl list devices available 'iPhone' | grep -Eo '[A-F0-9-]{36}' | head -n 1").strip
       if udid.nil? || udid.empty?
-        UI.user_error!("CI環境で利用可能なiPhoneシミュレータのUDIDが取得できませんでした")
+        UI.user_error!("Could not get UDID for an available iPhone simulator in the CI environment")
       end
     else
-      UI.user_error!("UDIDが指定されていません。justfileからudidオプションを渡してください")
+      UI.user_error!("UDID is not specified. Please pass the udid option from the justfile.")
     end
   end
   Actions.lane_context[:SIMULATOR_UDID] = udid
