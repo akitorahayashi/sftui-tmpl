@@ -1,11 +1,14 @@
 # fastlane/config.rb
 # Fastlane configuration values
 
+# === App Constants ===
+APP_NAME = "TemplateApp"
+
 # === Project Structure ===
 # This file is at <project>/fastlane/config.rb
 FASTLANE_DIR = __dir__
 PROJECT_ROOT = File.expand_path('..', FASTLANE_DIR)
-PROJECT_PATH = File.join(PROJECT_ROOT, "TemplateApp.xcodeproj")
+PROJECT_PATH = File.join(PROJECT_ROOT, "#{APP_NAME}.xcodeproj")
 
 # === Scheme Constants ===
 SCHEMES = {
@@ -37,8 +40,8 @@ INTG_TEST_RESULT_PATH = File.join(TEST_RESULTS_DIR, "intg", "TestResults.xcresul
 DEBUG_BUILD_DIR = File.join(BUILD_ROOT, "debug")
 RELEASE_BUILD_DIR = File.join(BUILD_ROOT, "release")
 
-DEBUG_ARCHIVE_PATH = File.join(DEBUG_BUILD_DIR, "archive", "TemplateApp.xcarchive")
-RELEASE_ARCHIVE_PATH = File.join(RELEASE_BUILD_DIR, "archive", "TemplateApp.xcarchive")
+DEBUG_ARCHIVE_PATH = File.join(DEBUG_BUILD_DIR, "archive", "#{APP_NAME}.xcarchive")
+RELEASE_ARCHIVE_PATH = File.join(RELEASE_BUILD_DIR, "archive", "#{APP_NAME}.xcarchive")
 
 DEBUG_BUILD_DERIVED_DATA_PATH = File.join(DEBUG_BUILD_DIR, "archive", "DerivedData")
 RELEASE_BUILD_DERIVED_DATA_PATH = File.join(RELEASE_BUILD_DIR, "archive", "DerivedData")
