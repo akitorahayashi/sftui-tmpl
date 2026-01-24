@@ -30,8 +30,8 @@ private_lane :sign_archive do |options|
   configuration = options[:configuration]
   
   export_base = case configuration
-                when CONFIGURATIONS[:release] then RELEASE_EXPORT_BASE
-                when CONFIGURATIONS[:debug] then DEBUG_EXPORT_BASE
+                when CONFIGURATIONS[:release] then RELEASE_BUILD_DIR
+                when CONFIGURATIONS[:debug] then DEBUG_BUILD_DIR
                 else UI.user_error!("Unknown configuration: #{configuration}")
                 end
 
@@ -41,7 +41,7 @@ private_lane :sign_archive do |options|
     archive_path: archive_path,
     export_method: export_method,
     skip_build_archive: true,
-    output_directory: "#{export_base}/#{export_method}",
+    output_directory: File.join(export_base, export_method),
     export_team_id: ENV['TEAM_ID']
   )
 end

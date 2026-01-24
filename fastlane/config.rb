@@ -1,9 +1,11 @@
-
 # fastlane/config.rb
 # Fastlane configuration values
 
-# === Project ===
-PROJECT_PATH = "TemplateApp.xcodeproj"
+# === Project Structure ===
+# This file is at <project>/fastlane/config.rb
+FASTLANE_DIR = __dir__
+PROJECT_ROOT = File.expand_path('..', FASTLANE_DIR)
+PROJECT_PATH = File.join(PROJECT_ROOT, "TemplateApp.xcodeproj")
 
 # === Scheme Constants ===
 SCHEMES = {
@@ -13,33 +15,37 @@ SCHEMES = {
   intg_test: "TemplateAppIntgTests"
 }.freeze
 
-# === Test Paths ===
-BUILD_PATH = "build"
-LOGS_PATH = "fastlane/logs"
-TEST_LOGS_PATH = "#{LOGS_PATH}/test"
-BUILD_LOGS_PATH = "#{LOGS_PATH}/build"
-
-TEST_RESULTS_PATH = "#{BUILD_PATH}/test-results"
-UNIT_TEST_RESULT_PATH = "#{TEST_RESULTS_PATH}/unit/TestResults.xcresult"
-UI_TEST_RESULT_PATH = "#{TEST_RESULTS_PATH}/ui/TestResults.xcresult"
-INTG_TEST_RESULT_PATH = "#{TEST_RESULTS_PATH}/intg/TestResults.xcresult"
-
-# === Archive Paths ===
-DEBUG_EXPORT_BASE = "fastlane/build/debug"
-RELEASE_EXPORT_BASE = "fastlane/build/release"
-DEBUG_ARCHIVE_PATH = "#{DEBUG_EXPORT_BASE}/archive/TemplateApp.xcarchive"
-RELEASE_ARCHIVE_PATH = "#{RELEASE_EXPORT_BASE}/archive/TemplateApp.xcarchive"
-
-# === Build DerivedData Paths ===
-TEST_DERIVED_DATA_PATH = "fastlane/build/test-results/DerivedData"
-DEBUG_BUILD_DERIVED_DATA_PATH = "fastlane/build/debug/archive/DerivedData"
-RELEASE_BUILD_DERIVED_DATA_PATH = "fastlane/build/release/archive/DerivedData"
-
 # === Configurations ===
 CONFIGURATIONS = {
   debug: "Debug",
   release: "Release",
 }.freeze
+
+# === Output Directories ===
+# All build outputs are organized under fastlane/build/
+BUILD_ROOT = File.join(FASTLANE_DIR, "build")
+LOGS_ROOT = File.join(FASTLANE_DIR, "logs")
+
+# Test outputs
+TEST_RESULTS_DIR = File.join(BUILD_ROOT, "test-results")
+TEST_DERIVED_DATA_PATH = File.join(TEST_RESULTS_DIR, "DerivedData")
+UNIT_TEST_RESULT_PATH = File.join(TEST_RESULTS_DIR, "unit", "TestResults.xcresult")
+UI_TEST_RESULT_PATH = File.join(TEST_RESULTS_DIR, "ui", "TestResults.xcresult")
+INTG_TEST_RESULT_PATH = File.join(TEST_RESULTS_DIR, "intg", "TestResults.xcresult")
+
+# Archive outputs
+DEBUG_BUILD_DIR = File.join(BUILD_ROOT, "debug")
+RELEASE_BUILD_DIR = File.join(BUILD_ROOT, "release")
+
+DEBUG_ARCHIVE_PATH = File.join(DEBUG_BUILD_DIR, "archive", "TemplateApp.xcarchive")
+RELEASE_ARCHIVE_PATH = File.join(RELEASE_BUILD_DIR, "archive", "TemplateApp.xcarchive")
+
+DEBUG_BUILD_DERIVED_DATA_PATH = File.join(DEBUG_BUILD_DIR, "archive", "DerivedData")
+RELEASE_BUILD_DERIVED_DATA_PATH = File.join(RELEASE_BUILD_DIR, "archive", "DerivedData")
+
+# Logs
+TEST_LOGS_PATH = File.join(LOGS_ROOT, "test")
+BUILD_LOGS_PATH = File.join(LOGS_ROOT, "build")
 
 # === Export Methods ===
 EXPORT_METHODS = {

@@ -1,6 +1,6 @@
 ## Overview
 
-This is an iOS app template based on SwiftUI.
+This is an iOS app template based on SwiftUI with MVVM architecture.
 
 ## Customization Steps
 
