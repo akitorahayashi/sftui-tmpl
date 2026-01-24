@@ -2,16 +2,19 @@
 # justfile for TemplateApp automation
 # ==============================================================================
 
-set dotenv-load
+set dotenv-load := true
 
 # --- PROJECT SETTINGS ---
+
 PROJECT_FILE := "TemplateApp.xcodeproj"
 
 # --- PROJECT SPECIFIC PATHS ---
+
 HOME_DIR := env("HOME")
 SWIFTPM_CACHE_PATH := env("SWIFTPM_CACHE_PATH", HOME_DIR + "/Library/Caches/org.swift.swiftpm")
 
 # --- ENVIRONMENT VARIABLES ---
+
 TEAM_ID := env("TEAM_ID", "")
 DEV_SIMULATOR_UDID := env("DEV_SIMULATOR_UDID", "")
 TEST_SIMULATOR_UDID := env("TEST_SIMULATOR_UDID", "")
@@ -19,6 +22,7 @@ TEST_SIMULATOR_UDID := env("TEST_SIMULATOR_UDID", "")
 # ==============================================================================
 # Modules
 # ==============================================================================
+
 # Load implementations under the fastlane directory as a module named 'fastlane'
 mod fastlane "fastlane/just/main.just"
 
@@ -56,23 +60,23 @@ setup:
 
 # Generate Xcode project
 gen-pj:
-    @echo "Generating Xcode project with TEAM_ID: {{TEAM_ID}}"
-    @TEAM_ID={{TEAM_ID}} envsubst < project.envsubst.yml > project.yml
+    @echo "Generating Xcode project with TEAM_ID: {{ TEAM_ID }}"
+    @TEAM_ID={{ TEAM_ID }} envsubst < project.envsubst.yml > project.yml
     @mint run xcodegen generate
 
 # Reset SwiftPM cache, dependencies, and build artifacts
 resolve-pkg:
     @echo "Removing SwiftPM build and cache..."
     @rm -rf .build
-    @rm -rf {{SWIFTPM_CACHE_PATH}}
+    @rm -rf {{ SWIFTPM_CACHE_PATH }}
     @echo "✅ SwiftPM build and cache removed."
     @echo "Resolving Swift package dependencies..."
-    @xcodebuild -resolvePackageDependencies -project {{PROJECT_FILE}}
+    @xcodebuild -resolvePackageDependencies -project {{ PROJECT_FILE }}
     @echo "✅ Package dependencies resolved."
 
 # Open project in Xcode
 open:
-    @xed {{PROJECT_FILE}}
+    @xed {{ PROJECT_FILE }}
 
 # ==============================================================================
 # Local Simulator
@@ -80,30 +84,30 @@ open:
 
 # Boot local simulator
 boot:
-    @if [ -z "{{DEV_SIMULATOR_UDID}}" ]; then \
+    @if [ -z "{{ DEV_SIMULATOR_UDID }}" ]; then \
         echo "DEV_SIMULATOR_UDID is not set. Please set it in your .env"; \
         exit 1; \
     fi
-    @echo "Booting development simulator: UDID: {{DEV_SIMULATOR_UDID}}"
-    @if xcrun simctl list devices | grep -q "{{DEV_SIMULATOR_UDID}} (Booted)"; then \
+    @echo "Booting development simulator: UDID: {{ DEV_SIMULATOR_UDID }}"
+    @if xcrun simctl list devices | grep -q "{{ DEV_SIMULATOR_UDID }} (Booted)"; then \
         echo "⚡️ Simulator is already booted."; \
     else \
-        xcrun simctl boot {{DEV_SIMULATOR_UDID}}; \
+        xcrun simctl boot {{ DEV_SIMULATOR_UDID }}; \
         echo "✅ Simulator booted."; \
     fi
     @open -a Simulator
 
 # Boot test simulator
 boot-test:
-    @if [ -z "{{TEST_SIMULATOR_UDID}}" ]; then \
+    @if [ -z "{{ TEST_SIMULATOR_UDID }}" ]; then \
         echo "TEST_SIMULATOR_UDID is not set. Please set it in your .env"; \
         exit 1; \
     fi
-    @echo "Booting test simulator: UDID: {{TEST_SIMULATOR_UDID}}"
-    @if xcrun simctl list devices | grep -q "{{TEST_SIMULATOR_UDID}} (Booted)"; then \
+    @echo "Booting test simulator: UDID: {{ TEST_SIMULATOR_UDID }}"
+    @if xcrun simctl list devices | grep -q "{{ TEST_SIMULATOR_UDID }} (Booted)"; then \
         echo "⚡️ Simulator is already booted."; \
     else \
-        xcrun simctl boot {{TEST_SIMULATOR_UDID}}; \
+        xcrun simctl boot {{ TEST_SIMULATOR_UDID }}; \
         echo "✅ Simulator booted."; \
     fi
     @open -a Simulator
@@ -118,11 +122,13 @@ siml:
 
 # Format code
 fix:
+    @just --fmt --unstable
     @mint run swiftformat .
     @mint run swiftlint lint --fix .
 
 # Check code format
 check: fix
+    @just --fmt --check --unstable
     @mint run swiftformat --lint .
     @mint run swiftlint lint --strict
 
@@ -132,12 +138,12 @@ check: fix
 
 # Clean build artifacts, caches, and generated files
 clean:
-    @rm -rf {{PROJECT_FILE}}
+    @rm -rf {{ PROJECT_FILE }}
     @rm -rf fastlane/build
     @rm -rf fastlane/logs
     @rm -rf fastlane/report.xml
     @rm -rf .build
-    @rm -rf {{SWIFTPM_CACHE_PATH}}
+    @rm -rf {{ SWIFTPM_CACHE_PATH }}
 
 # ==============================================================================
 # Test Interface (Delegated to fastlane module)
