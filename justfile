@@ -123,11 +123,14 @@ siml:
 # Format code
 fix:
     @just --fmt --unstable
+    @find fastlane/just -name "*.just" -exec just --fmt --unstable --justfile {} \;
     @mint run swiftformat .
     @mint run swiftlint lint --fix .
 
 # Check code format
 check: fix
+    @just --fmt --check --unstable
+    @find fastlane/just -name "*.just" -exec just --fmt --check --unstable --justfile {} \;
     @just --fmt --check --unstable
     @mint run swiftformat --lint .
     @mint run swiftlint lint --strict
